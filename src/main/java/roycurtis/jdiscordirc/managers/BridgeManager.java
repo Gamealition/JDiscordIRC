@@ -1,13 +1,13 @@
 package roycurtis.jdiscordirc.managers;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 public class BridgeManager
 {
-    public void setup()
-    {
+    private Queue<Runnable> tasks = new ArrayDeque<>();
 
-    }
-
-    public void takedown()
+    public void pump()
     {
 
     }
