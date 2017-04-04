@@ -6,7 +6,7 @@
 
     <!-- Project metadata -->
 
-    <groupId>roycurtis.discordirc</groupId>
+    <groupId>roycurtis.jdiscordirc</groupId>
     <artifactId>JDiscordIRC</artifactId>
     <version>0.0.1</version>
 
