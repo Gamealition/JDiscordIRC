@@ -8,6 +8,7 @@ import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import roycurtis.jdiscordirc.JDiscordIRC;
 
 import static roycurtis.jdiscordirc.JDiscordIRC.log;
 
@@ -57,7 +58,6 @@ public class DiscordManager extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        log("[Discord] Message: " + event.getMessage().getRawContent() + " (from " + event.getChannel().getName() + ")");
-        log("[Discord] THREAD: " + Thread.currentThread().getName());
+        JDiscordIRC.BRIDGE.onDiscordMessage(event);
     }
 }
