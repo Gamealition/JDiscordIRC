@@ -133,31 +133,39 @@ public class BridgeManager
 
     public void onDiscordDisconnect()
     {
-        IRC.sendMessage("Lost connection to Discord; reconnecting. . .");
+        queue.add( () -> {
+            IRC.sendMessage("Lost connection to Discord; reconnecting. . .");
+        });
     }
 
     public void onDiscordMessage(MessageReceivedEvent event)
     {
-        String msg = event.getMessage().getContent();
-        String who = event.getMember().getEffectiveName();
+        queue.add( () -> {
+            String msg = event.getMessage().getContent();
+            String who = event.getMember().getEffectiveName();
 
-        // Special handling for Discord action messages
-        if ( msg.startsWith("_") && msg.endsWith("_") )
-            IRC.sendAction( who, msg.substring( 1, msg.length() - 1 ) );
-        else
-            IRC.sendMessage("<%s%s%s> %s",
-                Colors.BOLD, who, Colors.NORMAL,
-                msg);
+            // Special handling for Discord action messages
+            if ( msg.startsWith("_") && msg.endsWith("_") )
+                IRC.sendAction( who, msg.substring( 1, msg.length() - 1 ) );
+            else
+                IRC.sendMessage("<%s%s%s> %s",
+                    Colors.BOLD, who, Colors.NORMAL,
+                    msg);
+        });
     }
 
     public void onDiscordUserJoin(GuildMemberJoinEvent event)
     {
-        IRC.sendMessage( "%s joined the server", event.getMember().getEffectiveName() );
+        queue.add( () -> {
+            IRC.sendMessage( "%s joined the server", event.getMember().getEffectiveName() );
+        });
     }
 
     public void onDiscordUserLeave(GuildMemberLeaveEvent event)
     {
-        IRC.sendMessage( "%s quit the server", event.getMember().getEffectiveName() );
+        queue.add( () -> {
+            IRC.sendMessage( "%s quit the server", event.getMember().getEffectiveName() );
+        });
     }
     //</editor-fold>
 }
