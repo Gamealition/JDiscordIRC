@@ -6,7 +6,7 @@ public class ConfigManager
 {
     private Properties props;
 
-    public void setup()
+    public void init()
     {
         props = new Properties();
 

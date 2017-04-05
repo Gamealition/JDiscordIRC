@@ -6,24 +6,24 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import roycurtis.jdiscordirc.JDiscordIRC;
 
+import static roycurtis.jdiscordirc.JDiscordIRC.BRIDGE;
 import static roycurtis.jdiscordirc.JDiscordIRC.log;
 
 public class DiscordManager extends ListenerAdapter
 {
-    private JDA jda;
+    protected JDA bot;
 
-    /* Manager methods (main thread) */
-
-    public void setup() throws Exception
+    //<editor-fold desc="Manager methods (main thread)">
+    public void init() throws Exception
     {
         log("[Discord] Connecting for first time...");
-        log("THREAD: " + Thread.currentThread().getName());
 
-        jda = new JDABuilder(AccountType.BOT)
+        bot = new JDABuilder(AccountType.BOT)
             .setAudioEnabled(false)
             .setToken("")
             .addListener(this)
@@ -32,32 +32,65 @@ public class DiscordManager extends ListenerAdapter
 
     public void takedown()
     {
-        jda.shutdown();
+        if (bot == null)
+            return;
+
+        bot.shutdown();
     }
+    //</editor-fold>
 
-    /* Event handlers (out of main thread) */
-
+    //<editor-fold desc="Bot event handlers (Discord thread)">
     @Override
     public void onReady(ReadyEvent event)
     {
-        log("[Discord] Connected");
+        log("[Discord] Connected successfully");
+        BRIDGE.onDiscordConnect();
     }
 
     @Override
     public void onReconnect(ReconnectedEvent event)
     {
         log("[Discord] Reconnected");
+        BRIDGE.onDiscordConnect();
     }
 
     @Override
     public void onDisconnect(DisconnectEvent event)
     {
-        log("[Discord] Lost connection! Auto-reconnecting...");
+        log( "[Discord] Lost connection (%s); reconnecting...", event.getCloseCode() );
+        BRIDGE.onDiscordDisconnect();
     }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        JDiscordIRC.BRIDGE.onDiscordMessage(event);
+        // Ignore own messages
+        if ( event.getAuthor().equals( bot.getSelfUser() ) )
+            return;
+
+        // Ignore messages from other channels
+        if ( !event.getChannel().getId().contentEquals("299214234645037056") )
+            return;
+
+        log( "[Discord] Message by %s: %s",
+            event.getMember().getEffectiveName(),
+            event.getMessage().getRawContent()
+        );
+        BRIDGE.onDiscordMessage(event);
     }
+
+    @Override
+    public void onGuildMemberJoin(GuildMemberJoinEvent event)
+    {
+        log( "[Discord] %s joined the server", event.getMember().getEffectiveName() );
+        BRIDGE.onDiscordUserJoin(event);
+    }
+
+    @Override
+    public void onGuildMemberLeave(GuildMemberLeaveEvent event)
+    {
+        log( "[Discord] %s quit the server", event.getMember().getEffectiveName() );
+        BRIDGE.onDiscordUserLeave(event);
+    }
+    //</editor-fold>
 }
