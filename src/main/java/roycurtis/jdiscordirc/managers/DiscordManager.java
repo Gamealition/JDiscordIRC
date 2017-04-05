@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
+import net.dv8tion.jda.core.events.ResumedEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -116,6 +117,13 @@ public class DiscordManager extends ListenerAdapter
 
     @Override
     public void onReconnect(ReconnectedEvent event)
+    {
+        log("[Discord] Reconnected");
+        BRIDGE.onDiscordConnect();
+    }
+
+    @Override
+    public void onResume(ResumedEvent event)
     {
         log("[Discord] Reconnected");
         BRIDGE.onDiscordConnect();
