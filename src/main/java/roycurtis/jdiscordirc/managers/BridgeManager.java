@@ -56,7 +56,15 @@ public class BridgeManager
     //<editor-fold desc="IRC->Discord (via IRC thread)">
     public void onIRCConnect()
     {
-        queue.add( () -> DISCORD.sendMessage("Connected to IRC") );
+        queue.add( () -> {
+            DISCORD.sendMessage("Connected to IRC");
+
+            // Courtesy message for those on IRC
+            IRC.sendMessage( DISCORD.isAvailable()
+                ? "Hello! I am now bridging chat between Discord and IRC"
+                : "Hello! I will bridge chat between Discord and IRC momentarily..."
+            );
+        } );
     }
 
     public void onIRCDisconnect()
@@ -109,7 +117,15 @@ public class BridgeManager
     //<editor-fold desc="Discord->IRC (via Discord thread)">
     public void onDiscordConnect()
     {
-        queue.add( () -> IRC.sendMessage("Connected to Discord") );
+        queue.add( () -> {
+            IRC.sendMessage("Connected to Discord");
+
+            // Courtesy message for those on Discord
+            DISCORD.sendMessage( IRC.isAvailable()
+                ? "Hello! I am now bridging chat between Discord and IRC"
+                : "Hello! I will bridge chat between Discord and IRC momentarily..."
+            );
+        } );
     }
 
     public void onDiscordDisconnect()
