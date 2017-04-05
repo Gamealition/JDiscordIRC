@@ -174,21 +174,30 @@ public class BridgeManager
             else
                 IRC.sendMessage("<%s%s%s> %s",
                     Colors.BOLD, who, Colors.NORMAL,
-                    msg);
+                    msg
+                );
         });
     }
 
     public void onDiscordUserJoin(GuildMemberJoinEvent event)
     {
         queue.add( () -> {
-            IRC.sendMessage( "%s joined the server", event.getMember().getEffectiveName() );
+            String who = event.getMember().getEffectiveName();
+
+            IRC.sendMessage( "%s%s%s joined the server",
+                Colors.BOLD, who, Colors.NORMAL
+            );
         });
     }
 
     public void onDiscordUserLeave(GuildMemberLeaveEvent event)
     {
         queue.add( () -> {
-            IRC.sendMessage( "%s quit the server", event.getMember().getEffectiveName() );
+            String who = event.getMember().getEffectiveName();
+
+            IRC.sendMessage( "%s%s%s quit the server",
+                Colors.BOLD, who, Colors.NORMAL
+            );
         });
     }
     //</editor-fold>
