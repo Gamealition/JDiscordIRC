@@ -164,6 +164,10 @@ public class DiscordManager extends ListenerAdapter
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event)
     {
+        // Ignore from other servers
+        if ( !event.getGuild().getId().contentEquals(GUILD) )
+            return;
+
         log( "[Discord] %s joined the server", event.getMember().getEffectiveName() );
         BRIDGE.onDiscordUserJoin(event);
     }
@@ -171,6 +175,10 @@ public class DiscordManager extends ListenerAdapter
     @Override
     public void onGuildMemberLeave(GuildMemberLeaveEvent event)
     {
+        // Ignore from other servers
+        if ( !event.getGuild().getId().contentEquals(GUILD) )
+            return;
+        
         log( "[Discord] %s quit the server", event.getMember().getEffectiveName() );
         BRIDGE.onDiscordUserLeave(event);
     }
