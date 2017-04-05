@@ -1,5 +1,6 @@
 package roycurtis.jdiscordirc.managers;
 
+import com.google.common.base.Strings;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.User;
@@ -92,6 +93,22 @@ public class IRCManager extends ListenerAdapter
 
         log("IRC: %s %s", who, action);
         IRC.bot.send().action(CHANNEL, who + " " + action);
+    }
+
+    public void setAway(String msg)
+    {
+        if ( !isAvailable() )
+        {
+            log("[IRC] Rejecting away; IRC unavailable: %s", msg);
+            return;
+        }
+
+        if ( Strings.isNullOrEmpty(msg) )
+            log("[IRC] Removing away message");
+        else
+            log("[IRC] Setting away message to: %s", msg);
+
+        IRC.bot.sendRaw().rawLine("AWAY :" + msg);
     }
     //</editor-fold>
 

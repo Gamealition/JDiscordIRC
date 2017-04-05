@@ -62,10 +62,16 @@ public class BridgeManager
             DISCORD.setStatus(OnlineStatus.ONLINE);
 
             // Courtesy message for those on IRC
-            IRC.sendMessage( DISCORD.isAvailable()
-                ? "Hello! I am now bridging chat between Discord and IRC"
-                : "Hello! I will bridge chat between Discord and IRC momentarily..."
-            );
+            if ( DISCORD.isAvailable() )
+            {
+                IRC.setAway("");
+                IRC.sendMessage("Hello! I am now bridging chat between Discord and IRC");
+            }
+            else
+            {
+                IRC.setAway("Waiting for connection to Discord...");
+                IRC.sendMessage("Hello! I will bridge chat between Discord and IRC momentarily...");
+            }
         } );
     }
 
@@ -137,6 +143,7 @@ public class BridgeManager
     public void onDiscordConnect()
     {
         queue.add( () -> {
+            IRC.setAway("");
             IRC.sendMessage("Connected to Discord");
 
             // Courtesy message for those on Discord
@@ -150,6 +157,7 @@ public class BridgeManager
     public void onDiscordDisconnect()
     {
         queue.add( () -> {
+            IRC.setAway("Waiting for connection to Discord...");
             IRC.sendMessage("Lost connection to Discord; reconnecting. . .");
         });
     }
