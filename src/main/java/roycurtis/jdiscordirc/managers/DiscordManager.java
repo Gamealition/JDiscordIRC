@@ -66,7 +66,7 @@ public class DiscordManager extends ListenerAdapter
         String fullMsg = String.format(msg, parts);
         log("IRC->Discord: %s", fullMsg);
 
-        setNickname(null);
+        setNickname("");
         bot.getTextChannelById(CHANNEL)
             .sendMessage(fullMsg)
             .complete();
@@ -89,7 +89,7 @@ public class DiscordManager extends ListenerAdapter
             .complete();
     }
 
-    public void setNickname(String nickname)
+    public void setNickname(@NotNull String nickname)
     {
         // Nickname changing is slow; skip if same.
         // Uses Objects.equals as String.equals doesn't handle nulls properly
