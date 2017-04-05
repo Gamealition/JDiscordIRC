@@ -3,15 +3,14 @@ package roycurtis.jdiscordirc.managers;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.pircbotx.Colors;
 import org.pircbotx.User;
 import roycurtis.jdiscordirc.util.CurrentThread;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static roycurtis.jdiscordirc.JDiscordIRC.DISCORD;
-import static roycurtis.jdiscordirc.JDiscordIRC.IRC;
-import static roycurtis.jdiscordirc.JDiscordIRC.log;
+import static roycurtis.jdiscordirc.JDiscordIRC.*;
 
 /**
  * Acts as a coordinator of events between IRC and Discord. It forces the handling of incoming
@@ -142,7 +141,9 @@ public class BridgeManager
         if ( msg.startsWith("_") && msg.endsWith("_") )
             IRC.sendAction( who, msg.substring( 1, msg.length() - 1 ) );
         else
-            IRC.sendMessage("%s: %s", who, msg);
+            IRC.sendMessage("<%s%s%s> %s",
+                Colors.BOLD, who, Colors.NORMAL,
+                msg);
     }
 
     public void onDiscordUserJoin(GuildMemberJoinEvent event)
