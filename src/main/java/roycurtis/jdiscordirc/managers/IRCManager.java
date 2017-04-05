@@ -111,7 +111,6 @@ public class IRCManager extends ListenerAdapter
     @Override
     public void onMessage(MessageEvent event) throws Exception
     {
-        // Reject null users (???)
         User user = event.getUser();
         if (user == null)
             return;
@@ -120,8 +119,23 @@ public class IRCManager extends ListenerAdapter
         if ( user.equals( bot.getUserBot() ) )
             return;
 
-        log( "[IRC] Message by %s: %s", user.getNick(), event.getMessage() );
+        log( "[IRC] Message from %s: %s", user.getNick(), event.getMessage() );
         BRIDGE.onIRCMessage( user, event.getMessage() );
+    }
+
+    @Override
+    public void onAction(ActionEvent event) throws Exception
+    {
+        User user = event.getUser();
+        if (user == null)
+            return;
+
+        // Ignore own messages
+        if ( user.equals( bot.getUserBot() ) )
+            return;
+
+        log( "[IRC] Action from %s: %s", user.getNick(), event.getAction() );
+        BRIDGE.onIRCAction( user, event.getAction() );
     }
 
     @Override
@@ -207,6 +221,17 @@ public class IRCManager extends ListenerAdapter
             event.getReason()
         );
         BRIDGE.onIRCKick( target, kicker, event.getReason() );
+    }
+
+    @Override
+    public void onNickChange(NickChangeEvent event) throws Exception
+    {
+        User user = event.getUser();
+        if (user == null)
+            return;
+
+        log( "[IRC] %s changed nick to %s", event.getOldNick(), event.getNewNick() );
+        BRIDGE.onIRCNickChange( event.getOldNick(), event.getNewNick() );
     }
     //</editor-fold>
 }
