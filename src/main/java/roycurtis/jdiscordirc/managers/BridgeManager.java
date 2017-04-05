@@ -119,10 +119,14 @@ public class BridgeManager
 
     public void onDiscordMessage(MessageReceivedEvent event)
     {
-        IRC.sendMessage("%s: %s",
-            event.getMember().getEffectiveName(),
-            event.getMessage().getContent()
-        );
+        String msg = event.getMessage().getContent();
+        String who = event.getMember().getEffectiveName();
+
+        // Special handling for Discord action messages
+        if ( msg.startsWith("_") && msg.endsWith("_") )
+            IRC.sendAction( who, msg.substring( 1, msg.length() - 1 ) );
+        else
+            IRC.sendMessage("%s: %s", who, msg);
     }
 
     public void onDiscordUserJoin(GuildMemberJoinEvent event)

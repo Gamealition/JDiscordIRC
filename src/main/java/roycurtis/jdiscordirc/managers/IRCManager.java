@@ -80,7 +80,19 @@ public class IRCManager extends ListenerAdapter
 
         String fullMsg = String.format(msg, parts);
         log("Discord->IRC: %s", fullMsg);
-        IRC.bot.send().message("#vprottest", fullMsg);
+        IRC.bot.send().message(CHANNEL, fullMsg);
+    }
+
+    public void sendAction(String who, String action)
+    {
+        if ( !isAvailable() )
+        {
+            log("[IRC] Rejecting action; IRC unavailable: %s", action);
+            return;
+        }
+
+        log("Discord->IRC: %s %s", who, action);
+        IRC.bot.send().action(CHANNEL, who + " " + action);
     }
     //</editor-fold>
 
