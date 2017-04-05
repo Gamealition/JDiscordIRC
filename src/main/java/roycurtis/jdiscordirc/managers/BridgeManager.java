@@ -1,6 +1,7 @@
 package roycurtis.jdiscordirc.managers;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -41,6 +42,42 @@ public class BridgeManager
 
         String fullMsg = String.format(msg, parts);
         log("IRC->Discord: %s", fullMsg);
+        Member self = DISCORD.bot
+            .getGuildById("299214234645037056")
+            .getSelfMember();
+
+        DISCORD.bot
+            .getGuildById("299214234645037056")
+            .getController()
+            .setNickname(self, "GIRC")
+            .complete();
+
+        DISCORD.bot
+            .getTextChannelById("299214234645037056")
+            .sendMessage(fullMsg)
+            .complete();
+    }
+
+    public void sendDiscordMessageAs(String who, String msg, Object... parts)
+    {
+        if ( !isDiscordAvailable() )
+        {
+            log("[Bridge] Not forwarding IRC message; Discord unavailable: %s", msg);
+            return;
+        }
+
+        String fullMsg = String.format(msg, parts);
+        log("IRC->Discord: %s: %s", who, fullMsg);
+        Member self = DISCORD.bot
+            .getGuildById("299214234645037056")
+            .getSelfMember();
+
+        DISCORD.bot
+            .getGuildById("299214234645037056")
+            .getController()
+            .setNickname(self, "IRC|" + who)
+            .complete();
+
         DISCORD.bot
             .getTextChannelById("299214234645037056")
             .sendMessage(fullMsg)
@@ -59,7 +96,7 @@ public class BridgeManager
 
     public void onIRCMessage(User user, String message)
     {
-        sendDiscordMessage("%s: %s", user.getNick(), message);
+        sendDiscordMessageAs(user.getNick(), "%s", message);
     }
 
     public void onIRCJoin(User user)
