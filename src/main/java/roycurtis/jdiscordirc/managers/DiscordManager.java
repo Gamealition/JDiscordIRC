@@ -1,6 +1,5 @@
 package roycurtis.jdiscordirc.managers;
 
-import com.sun.istack.internal.NotNull;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;

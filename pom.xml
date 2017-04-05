@@ -107,6 +107,20 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Makes built JAR executable -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>roycurtis.jdiscordirc.JDiscordIRC</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
