@@ -92,7 +92,7 @@ public class DiscordManager extends ListenerAdapter
             .complete();
     }
 
-    public void setNickname(@NotNull String nickname)
+    public void setNickname(String nickname)
     {
         // Nickname changing is slow; skip if same.
         // Uses Objects.equals as String.equals doesn't handle nulls properly
