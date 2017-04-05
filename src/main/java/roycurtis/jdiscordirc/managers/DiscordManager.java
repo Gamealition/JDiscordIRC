@@ -67,7 +67,7 @@ public class DiscordManager extends ListenerAdapter
         }
 
         String fullMsg = String.format(msg, parts);
-        log("IRC->Discord: %s", fullMsg);
+        log("Discord: %s", fullMsg);
 
         setNickname("");
         bot.getTextChannelById(CHANNEL)
@@ -79,12 +79,12 @@ public class DiscordManager extends ListenerAdapter
     {
         if ( !isAvailable() )
         {
-            log("[Bridge] Not forwarding IRC message; Discord unavailable: %s", msg);
+            log("[Discord] Not forwarding IRC message; Discord unavailable: %s", msg);
             return;
         }
 
         String fullMsg = String.format(msg, parts);
-        log("IRC->Discord: %s: %s", who, fullMsg);
+        log("Discord: %s: %s", who, fullMsg);
 
         setNickname(who);
         bot.getTextChannelById(CHANNEL)

@@ -1,5 +1,7 @@
 package roycurtis.jdiscordirc.managers;
 
+import com.google.common.base.Strings;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -87,23 +89,35 @@ public class BridgeManager
 
     public void onIRCJoin(User user)
     {
-        queue.add( () -> DISCORD.sendMessage( "%s joined the channel", user.getNick() ) );
+        queue.add( () -> DISCORD.sendMessage( "**%s** joined the channel", user.getNick() ) );
     }
 
-    public void onIRCPart(User user, String reason)
+    public void onIRCPart(User user, final String reason)
     {
-        queue.add( () -> DISCORD.sendMessage("%s left the channel (%s)", user.getNick(), reason) );
+        queue.add( () -> {
+            String reasonPart = Strings.isNullOrEmpty(reason)
+                ? ""
+                : "(_" + reason + "_)";
+
+            DISCORD.sendMessage("**%s** left the channel %s", user.getNick(), reasonPart);
+        });
     }
 
     public void onIRCQuit(User user, String reason)
     {
-        queue.add( () -> DISCORD.sendMessage("%s quit the server (%s)", user.getNick(), reason) );
+        queue.add( () -> {
+            String reasonPart = Strings.isNullOrEmpty(reason)
+                ? ""
+                : "(_" + reason + "_)";
+
+            DISCORD.sendMessage("**%s** quit the server (_%s_)", user.getNick(), reasonPart);
+        });
     }
 
     public void onIRCKick(User target, User kicker, String reason)
     {
         queue.add( () -> {
-            DISCORD.sendMessage("%s was kicked by %s (%s)",
+            DISCORD.sendMessage("**%s** was kicked by **%s** (_%s_)",
                 target.getNick(),
                 kicker.getNick(),
                 reason
@@ -113,7 +127,9 @@ public class BridgeManager
 
     public void onIRCNickChange(String oldNick, String newNick)
     {
-        queue.add( () -> DISCORD.sendMessage("%s changed nick to %s", oldNick, newNick) );
+        queue.add( () -> {
+            DISCORD.sendMessage("**%s** changed nick to **%s**", oldNick, newNick);
+        } );
     }
     //</editor-fold>
 

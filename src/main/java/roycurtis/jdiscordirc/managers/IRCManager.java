@@ -78,7 +78,7 @@ public class IRCManager extends ListenerAdapter
         }
 
         String fullMsg = String.format(msg, parts);
-        log("Discord->IRC: %s", fullMsg);
+        log("IRC: %s", fullMsg);
         IRC.bot.send().message(CHANNEL, fullMsg);
     }
 
@@ -90,7 +90,7 @@ public class IRCManager extends ListenerAdapter
             return;
         }
 
-        log("Discord->IRC: %s %s", who, action);
+        log("IRC: %s %s", who, action);
         IRC.bot.send().action(CHANNEL, who + " " + action);
     }
     //</editor-fold>
