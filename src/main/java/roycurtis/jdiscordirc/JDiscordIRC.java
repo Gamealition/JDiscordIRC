@@ -4,7 +4,6 @@ import roycurtis.jdiscordirc.managers.BridgeManager;
 import roycurtis.jdiscordirc.managers.ConfigManager;
 import roycurtis.jdiscordirc.managers.DiscordManager;
 import roycurtis.jdiscordirc.managers.IRCManager;
-import roycurtis.jdiscordirc.util.CurrentThread;
 
 /** Main application class; handles init, main loop and exit */
 public class JDiscordIRC
@@ -63,7 +62,7 @@ public class JDiscordIRC
     private static void loop()
     {
         while ( !isExiting() )
-            CurrentThread.sleep(50);
+            BRIDGE.pump();
     }
 
     private static void takedown()

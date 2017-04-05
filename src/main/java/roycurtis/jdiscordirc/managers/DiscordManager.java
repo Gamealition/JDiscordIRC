@@ -94,7 +94,7 @@ public class DiscordManager extends ListenerAdapter
         bot
             .getGuildById(GUILD)
             .getController()
-            .setNickname(self, "IRC|" + who)
+            .setNickname(self, who + " (IRC)")
             .complete();
 
         bot
