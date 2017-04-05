@@ -10,6 +10,7 @@ import roycurtis.jdiscordirc.JDiscordIRC;
 import java.nio.charset.StandardCharsets;
 
 import static roycurtis.jdiscordirc.JDiscordIRC.BRIDGE;
+import static roycurtis.jdiscordirc.JDiscordIRC.IRC;
 import static roycurtis.jdiscordirc.JDiscordIRC.log;
 
 public class IRCManager extends ListenerAdapter
@@ -52,6 +53,29 @@ public class IRCManager extends ListenerAdapter
             bot.close();
         else
             bot.sendIRC().quitServer("Going down");
+    }
+
+    public boolean isAvailable()
+    {
+        if (bot == null)
+            return false;
+        else if ( !bot.isConnected() )
+            return false;
+        else
+            return bot.getUserChannelDao().containsChannel(CHANNEL);
+    }
+
+    public void sendMessage(String msg, Object... parts)
+    {
+        if ( !isAvailable() )
+        {
+            log("[IRC] Rejecting message; IRC unavailable: %s", msg);
+            return;
+        }
+
+        String fullMsg = String.format(msg, parts);
+        log("Discord->IRC: %s", fullMsg);
+        IRC.bot.send().message("#vprottest", fullMsg);
     }
     //</editor-fold>
 

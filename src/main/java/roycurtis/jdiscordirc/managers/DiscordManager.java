@@ -3,6 +3,7 @@ package roycurtis.jdiscordirc.managers;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
@@ -36,6 +37,65 @@ public class DiscordManager extends ListenerAdapter
             return;
 
         bot.shutdown();
+    }
+
+    public boolean isAvailable()
+    {
+        if (bot == null)
+            return false;
+        else return bot.getStatus() == JDA.Status.CONNECTED;
+    }
+
+    public void sendMessage(String msg, Object... parts)
+    {
+        if ( !isAvailable() )
+        {
+            log("[Discord] Rejecting message; Discord unavailable: %s", msg);
+            return;
+        }
+
+        String fullMsg = String.format(msg, parts);
+        log("IRC->Discord: %s", fullMsg);
+        Member self = bot
+            .getGuildById(GUILD)
+            .getSelfMember();
+
+        bot
+            .getGuildById(GUILD)
+            .getController()
+            .setNickname(self, null)
+            .complete();
+
+        bot
+            .getTextChannelById(CHANNEL)
+            .sendMessage(fullMsg)
+            .complete();
+    }
+
+    public void sendMessageAs(String who, String msg, Object... parts)
+    {
+        if ( !isAvailable() )
+        {
+            log("[Bridge] Not forwarding IRC message; Discord unavailable: %s", msg);
+            return;
+        }
+
+        String fullMsg = String.format(msg, parts);
+        log("IRC->Discord: %s: %s", who, fullMsg);
+        Member self = bot
+            .getGuildById(GUILD)
+            .getSelfMember();
+
+        bot
+            .getGuildById(GUILD)
+            .getController()
+            .setNickname(self, "IRC|" + who)
+            .complete();
+
+        bot
+            .getTextChannelById(CHANNEL)
+            .sendMessage(fullMsg)
+            .complete();
     }
     //</editor-fold>
 
