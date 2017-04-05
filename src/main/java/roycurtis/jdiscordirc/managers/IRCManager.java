@@ -32,7 +32,6 @@ public class IRCManager extends ListenerAdapter
             .setAutoReconnectAttempts(Integer.MAX_VALUE)
             .setAutoReconnectDelay(5000)
             .addServer("irc.us.gamesurge.net")
-            .addAutoJoinChannel("#vprottest")
             .addListener(this)
             .buildConfiguration();
 
@@ -60,8 +59,11 @@ public class IRCManager extends ListenerAdapter
     @Override
     public void onConnect(ConnectEvent event) throws Exception
     {
-        log("[IRC] Connected");
         // We won't send connect to bridge; all we care about is joining channel
+        log("[IRC] Connected");
+        // We don't use auto-join, because if the bot gets kicked we simply disconnect. The auto
+        // reconnect doesn't honor channel auto-join.
+        bot.send().joinChannel("#vprottest");
     }
 
     @Override
