@@ -57,6 +57,7 @@ public class BridgeManager
     {
         queue.add( () -> {
             DISCORD.sendMessage("Connected to IRC");
+            DISCORD.setStatus(OnlineStatus.ONLINE);
 
             // Courtesy message for those on IRC
             IRC.sendMessage( DISCORD.isAvailable()
@@ -68,7 +69,10 @@ public class BridgeManager
 
     public void onIRCDisconnect()
     {
-        queue.add( () -> DISCORD.sendMessage("Lost connection to IRC; reconnecting...") );
+        queue.add( () -> {
+            DISCORD.sendMessage("Lost connection to IRC; reconnecting...");
+            DISCORD.setStatus(OnlineStatus.DO_NOT_DISTURB);
+        } );
     }
 
     public void onIRCMessage(User user, String message)

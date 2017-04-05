@@ -1,8 +1,10 @@
 package roycurtis.jdiscordirc.managers;
 
+import com.sun.istack.internal.NotNull;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
@@ -36,6 +38,7 @@ public class DiscordManager extends ListenerAdapter
         bot = new JDABuilder(AccountType.BOT)
             .setAudioEnabled(false)
             .setToken(TOKEN)
+            .setStatus(OnlineStatus.DO_NOT_DISTURB)
             .addListener(this)
             .buildAsync();
     }
@@ -104,6 +107,11 @@ public class DiscordManager extends ListenerAdapter
             .complete();
 
         this.nickname = nickname;
+    }
+
+    public void setStatus(OnlineStatus status)
+    {
+        bot.getPresence().setStatus(status);
     }
     //</editor-fold>
 
