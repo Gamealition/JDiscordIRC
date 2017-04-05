@@ -12,6 +12,8 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
+import java.util.Objects;
+
 import static roycurtis.jdiscordirc.JDiscordIRC.BRIDGE;
 import static roycurtis.jdiscordirc.JDiscordIRC.log;
 
@@ -22,7 +24,8 @@ public class DiscordManager extends ListenerAdapter
     private static final String GUILD   = "299214234645037056";
     private static final String CHANNEL = "299214234645037056";
 
-    protected JDA bot;
+    private JDA    bot;
+    private String nickname;
 
     //<editor-fold desc="Manager methods (main thread)">
     public void init() throws Exception
@@ -61,18 +64,9 @@ public class DiscordManager extends ListenerAdapter
 
         String fullMsg = String.format(msg, parts);
         log("IRC->Discord: %s", fullMsg);
-        Member self = bot
-            .getGuildById(GUILD)
-            .getSelfMember();
 
-        bot
-            .getGuildById(GUILD)
-            .getController()
-            .setNickname(self, null)
-            .complete();
-
-        bot
-            .getTextChannelById(CHANNEL)
+        setNickname(null);
+        bot.getTextChannelById(CHANNEL)
             .sendMessage(fullMsg)
             .complete();
     }
@@ -87,20 +81,28 @@ public class DiscordManager extends ListenerAdapter
 
         String fullMsg = String.format(msg, parts);
         log("IRC->Discord: %s: %s", who, fullMsg);
-        Member self = bot
-            .getGuildById(GUILD)
-            .getSelfMember();
 
-        bot
-            .getGuildById(GUILD)
-            .getController()
-            .setNickname(self, who + " (IRC)")
-            .complete();
-
-        bot
-            .getTextChannelById(CHANNEL)
+        setNickname(who);
+        bot.getTextChannelById(CHANNEL)
             .sendMessage(fullMsg)
             .complete();
+    }
+
+    public void setNickname(String nickname)
+    {
+        // Nickname changing is slow; skip if same.
+        // Uses Objects.equals as String.equals doesn't handle nulls properly
+        if ( Objects.equals(this.nickname, nickname) )
+            return;
+
+        Member self = bot.getGuildById(GUILD).getSelfMember();
+
+        bot.getGuildById(GUILD)
+            .getController()
+            .setNickname(self, nickname)
+            .complete();
+
+        this.nickname = nickname;
     }
     //</editor-fold>
 
