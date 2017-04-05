@@ -15,6 +15,11 @@ import static roycurtis.jdiscordirc.JDiscordIRC.log;
 
 public class IRCManager extends ListenerAdapter
 {
+    // TODO: Make these config
+    private static final String SERVER   = "irc.us.gamesurge.net";
+    private static final String CHANNEL  = "#vprottest";
+    private static final String NICKNAME = "GDiscord";
+
     protected PircBotX bot;
 
     private Thread thread;
@@ -25,14 +30,14 @@ public class IRCManager extends ListenerAdapter
         log("[IRC] Connecting for first time...");
 
         Configuration config = new Configuration.Builder()
-            .setName("GDiscord")
+            .setName(NICKNAME)
             .setLogin("JDiscordIRC")
             .setRealName("JDiscordIRC alpha test")
             .setEncoding(StandardCharsets.UTF_8)
             .setAutoReconnect(true)
             .setAutoReconnectAttempts(Integer.MAX_VALUE)
             .setAutoReconnectDelay(5000)
-            .addServer("irc.us.gamesurge.net")
+            .addServer(SERVER)
             .addListener(this)
             .buildConfiguration();
 
@@ -87,7 +92,7 @@ public class IRCManager extends ListenerAdapter
         log("[IRC] Connected");
         // We don't use auto-join, because if the bot gets kicked we simply disconnect. The auto
         // reconnect doesn't honor channel auto-join.
-        bot.send().joinChannel("#vprottest");
+        bot.send().joinChannel(CHANNEL);
     }
 
     @Override

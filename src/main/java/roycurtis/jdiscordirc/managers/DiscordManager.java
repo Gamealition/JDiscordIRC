@@ -17,6 +17,11 @@ import static roycurtis.jdiscordirc.JDiscordIRC.log;
 
 public class DiscordManager extends ListenerAdapter
 {
+    // TODO: Make these config
+    private static final String TOKEN   = "";
+    private static final String GUILD   = "299214234645037056";
+    private static final String CHANNEL = "299214234645037056";
+
     protected JDA bot;
 
     //<editor-fold desc="Manager methods (main thread)">
@@ -26,7 +31,7 @@ public class DiscordManager extends ListenerAdapter
 
         bot = new JDABuilder(AccountType.BOT)
             .setAudioEnabled(false)
-            .setToken("")
+            .setToken(TOKEN)
             .addListener(this)
             .buildAsync();
     }
@@ -129,7 +134,7 @@ public class DiscordManager extends ListenerAdapter
             return;
 
         // Ignore messages from other channels
-        if ( !event.getChannel().getId().contentEquals("299214234645037056") )
+        if ( !event.getChannel().getId().contentEquals(CHANNEL) )
             return;
 
         log( "[Discord] Message by %s: %s",
