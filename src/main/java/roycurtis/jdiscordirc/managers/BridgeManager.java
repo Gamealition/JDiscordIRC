@@ -116,7 +116,7 @@ public class BridgeManager
                 ? ""
                 : "(_" + reason + "_)";
 
-            DISCORD.sendMessage("**%s** quit the server (_%s_)", user.getNick(), reasonPart);
+            DISCORD.sendMessage("**%s** quit the server %s", user.getNick(), reasonPart);
         });
     }
 
