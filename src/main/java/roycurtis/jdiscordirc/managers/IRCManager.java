@@ -20,9 +20,8 @@ public class IRCManager extends ListenerAdapter
     private static final String CHANNEL  = "#vprottest";
     private static final String NICKNAME = "GDiscord";
 
-    protected PircBotX bot;
-
-    private Thread thread;
+    private PircBotX bot;
+    private Thread   thread;
 
     //<editor-fold desc="Manager methods (main thread)">
     public void init() throws Exception
