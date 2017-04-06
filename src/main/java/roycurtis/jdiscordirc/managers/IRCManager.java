@@ -34,6 +34,7 @@ public class IRCManager extends ListenerAdapter
             .setLogin("JDiscordIRC")
             .setRealName("JDiscordIRC alpha test")
             .setEncoding(StandardCharsets.UTF_8)
+            .setAutoNickChange(true)
             .setAutoReconnect(true)
             .setAutoReconnectAttempts(Integer.MAX_VALUE)
             .setAutoReconnectDelay(5000)
