@@ -42,14 +42,6 @@ public class DiscordManager extends ListenerAdapter
             .buildAsync();
     }
 
-    public void takedown()
-    {
-        if (bot == null)
-            return;
-
-        bot.shutdown();
-    }
-
     public boolean isAvailable()
     {
         if (bot == null)

@@ -52,16 +52,6 @@ public class IRCManager extends ListenerAdapter
         thread.start();
     }
 
-    public void takedown()
-    {
-        if (bot == null)
-            return;
-        else if (bot.getState() != PircBotX.State.CONNECTED)
-            bot.close();
-        else
-            bot.sendIRC().quitServer("Going down");
-    }
-
     public boolean isAvailable()
     {
         if (bot == null)

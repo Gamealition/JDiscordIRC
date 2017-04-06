@@ -16,15 +16,18 @@ public class JDiscordIRC
     private static boolean exiting = false;
 
     //<editor-fold desc="State management">
-    public static synchronized void exit(String why)
-    {
-        log("### Starting exit: %s", why);
-        exiting = true;
-    }
-
     public static synchronized boolean isExiting()
     {
         return exiting;
+    }
+
+    public static synchronized void exit(String why)
+    {
+        if ( isExiting() )
+            return;
+
+        log("### Starting exit: %s", why);
+        exiting = true;
     }
     //</editor-fold>
 
@@ -39,8 +42,7 @@ public class JDiscordIRC
         log("### JDiscordIRC is starting...");
         init();
         loop();
-        takedown();
-        log("### JDiscord is finished");
+        log("### JDiscord has died");
     }
 
     private static void init()
@@ -53,6 +55,10 @@ public class JDiscordIRC
         }
         catch (Exception e)
         {
+            // Exceptions fired during exit likely due to interrupt (e.g. CTRL+C)
+            if ( isExiting() )
+                return;
+
             log("[!] Exception during setup phase, exiting");
             e.printStackTrace();
             exit("Could not complete setup");
@@ -63,12 +69,6 @@ public class JDiscordIRC
     {
         while ( !isExiting() )
             BRIDGE.pump();
-    }
-
-    private static void takedown()
-    {
-        DISCORD.takedown();
-        IRC.takedown();
     }
     //</editor-fold>
 }
