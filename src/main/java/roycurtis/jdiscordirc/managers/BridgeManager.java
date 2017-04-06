@@ -85,12 +85,12 @@ public class BridgeManager
 
     public void onIRCMessage(User user, String message)
     {
-        queue.add( () -> DISCORD.sendMessageAs(user.getNick() + " (IRC)", "%s", message) );
+        queue.add( () -> DISCORD.sendMessage("<**%s**> %s", user.getNick(), message) );
     }
 
     public void onIRCAction(User user, String action)
     {
-        queue.add( () -> DISCORD.sendMessageAs(user.getNick() + " (IRC)", "_%s_", action) );
+        queue.add( () -> DISCORD.sendMessage("_**%s** %s_", user.getNick(), action) );
     }
 
     public void onIRCJoin(User user)

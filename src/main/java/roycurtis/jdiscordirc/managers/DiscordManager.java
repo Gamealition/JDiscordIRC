@@ -14,8 +14,6 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
-import java.util.Objects;
-
 import static roycurtis.jdiscordirc.JDiscordIRC.BRIDGE;
 import static roycurtis.jdiscordirc.JDiscordIRC.log;
 
@@ -26,8 +24,7 @@ public class DiscordManager extends ListenerAdapter
     private static final String GUILD   = "299214234645037056";
     private static final String CHANNEL = "299214234645037056";
 
-    private JDA    bot;
-    private String nickname;
+    private JDA bot;
 
     //<editor-fold desc="Manager methods (main thread)">
     public void init() throws Exception
@@ -60,44 +57,9 @@ public class DiscordManager extends ListenerAdapter
         String fullMsg = String.format(msg, parts);
         log("Discord: %s", fullMsg);
 
-        setNickname("");
         bot.getTextChannelById(CHANNEL)
             .sendMessage(fullMsg)
             .complete();
-    }
-
-    public void sendMessageAs(String who, String msg, Object... parts)
-    {
-        if ( !isAvailable() )
-        {
-            log("[Discord] Not forwarding IRC message; Discord unavailable: %s", msg);
-            return;
-        }
-
-        String fullMsg = String.format(msg, parts);
-        log("Discord: %s: %s", who, fullMsg);
-
-        setNickname(who);
-        bot.getTextChannelById(CHANNEL)
-            .sendMessage(fullMsg)
-            .complete();
-    }
-
-    public void setNickname(String nickname)
-    {
-        // Nickname changing is slow; skip if same.
-        // Uses Objects.equals as String.equals doesn't handle nulls properly
-        if ( Objects.equals(this.nickname, nickname) )
-            return;
-
-        Member self = bot.getGuildById(GUILD).getSelfMember();
-
-        bot.getGuildById(GUILD)
-            .getController()
-            .setNickname(self, nickname)
-            .complete();
-
-        this.nickname = nickname;
     }
 
     public void setStatus(OnlineStatus status)
