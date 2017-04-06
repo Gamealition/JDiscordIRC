@@ -104,6 +104,26 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+
+                        <configuration>
+                            <!-- Exclude JNA library (not needed) -->
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>net.java.dev.jna:jna</exclude>
+                                </excludes>
+                            </artifactSet>
+
+                            <!-- Exclude Opus natives (not needed) -->
+                            <filters>
+                                <filter>
+                                    <artifact>net.dv8tion:JDA</artifact>
+                                    <excludes>
+                                        <exclude>natives/**</exclude>
+                                        <exclude>tomp2p/opuswrapper/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
