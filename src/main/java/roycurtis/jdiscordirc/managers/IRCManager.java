@@ -23,6 +23,7 @@ public class IRCManager extends ListenerAdapter
 
     private PircBotX bot;
     private Thread   thread;
+    private boolean  wasConnected;
 
     //<editor-fold desc="Manager methods (main thread)">
     public void init() throws Exception
@@ -45,7 +46,7 @@ public class IRCManager extends ListenerAdapter
         bot    = new PircBotX(config);
         thread = new Thread(() -> {
             try                 { bot.startBot(); }
-            catch (Exception e) { JDiscordIRC.exit("Could not start IRC bot"); }
+            catch (Exception e) { JDiscordIRC.exit("IRC bot crashed"); }
         }, "PircBotX");
 
         thread.start();
@@ -133,8 +134,14 @@ public class IRCManager extends ListenerAdapter
     @Override
     public void onDisconnect(DisconnectEvent event) throws Exception
     {
-        log("[IRC] Lost connection; reconnecting...");
-        BRIDGE.onIRCDisconnect();
+        if (wasConnected)
+        {
+            log( "[IRC] Lost connection (%s); reconnecting...", event.getDisconnectException() );
+            wasConnected = false;
+            BRIDGE.onIRCDisconnect();
+        }
+        else
+            log( "[IRC] Could not connect (%s); retrying...", event.getDisconnectException() );
     }
 
     @Override
@@ -194,6 +201,7 @@ public class IRCManager extends ListenerAdapter
         {
             log( "[IRC] Joined channel successfully", user.getHostmask() );
             BRIDGE.onIRCConnect();
+            wasConnected = true;
         }
         else
         {

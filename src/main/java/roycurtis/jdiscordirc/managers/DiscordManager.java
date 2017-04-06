@@ -178,7 +178,7 @@ public class DiscordManager extends ListenerAdapter
         // Ignore from other servers
         if ( !event.getGuild().getId().contentEquals(GUILD) )
             return;
-        
+
         log( "[Discord] %s quit the server", event.getMember().getEffectiveName() );
         BRIDGE.onDiscordUserLeave(event);
     }
