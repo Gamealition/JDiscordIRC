@@ -17,9 +17,9 @@ import static roycurtis.jdiscordirc.JDiscordIRC.log;
 public class IRCManager extends ListenerAdapter
 {
     // TODO: Make these config
-    private static final String SERVER   = "irc.us.gamesurge.net";
-    private static final String CHANNEL  = "#vprottest";
-    private static final String NICKNAME = "GDiscord";
+    public static final String SERVER   = "irc.us.gamesurge.net";
+    public static final String CHANNEL  = "#vprottest";
+    public static final String NICKNAME = "GDiscord";
 
     private PircBotX bot;
     private Thread   thread;

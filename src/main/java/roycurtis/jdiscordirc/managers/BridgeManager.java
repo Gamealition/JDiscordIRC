@@ -59,7 +59,11 @@ public class BridgeManager
     {
         queue.add( () -> {
             DISCORD.sendMessage("Connected to IRC");
-            DISCORD.setStatus(OnlineStatus.ONLINE);
+            DISCORD.setStatus(
+                OnlineStatus.ONLINE,
+                IRCManager.CHANNEL + " @ " + IRCManager.SERVER,
+                "https://irc.gamealition.com"
+            );
 
             // Courtesy message for those on IRC
             if ( DISCORD.isAvailable() )
@@ -79,7 +83,11 @@ public class BridgeManager
     {
         queue.add( () -> {
             DISCORD.sendMessage("Lost connection to IRC; reconnecting...");
-            DISCORD.setStatus(OnlineStatus.DO_NOT_DISTURB);
+            DISCORD.setStatus(
+                OnlineStatus.DO_NOT_DISTURB,
+                "Connecting to IRC...",
+                "https://irc.gamealition.com"
+            );
         } );
     }
 

@@ -4,7 +4,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
@@ -20,9 +20,9 @@ import static roycurtis.jdiscordirc.JDiscordIRC.log;
 public class DiscordManager extends ListenerAdapter
 {
     // TODO: Make these config
-    private static final String TOKEN   = "";
-    private static final String GUILD   = "299214234645037056";
-    private static final String CHANNEL = "299214234645037056";
+    public static final String GUILD   = "299214234645037056";
+    public static final String CHANNEL = "299214234645037056";
+    public static final String TOKEN   = "";
 
     private JDA bot;
 
@@ -35,6 +35,7 @@ public class DiscordManager extends ListenerAdapter
             .setAudioEnabled(false)
             .setToken(TOKEN)
             .setStatus(OnlineStatus.DO_NOT_DISTURB)
+            .setGame( Game.of("Connecting to IRC...", "https://irc.gamealition.com") )
             .addListener(this)
             .buildAsync();
     }
@@ -62,9 +63,10 @@ public class DiscordManager extends ListenerAdapter
             .complete();
     }
 
-    public void setStatus(OnlineStatus status)
+    public void setStatus(OnlineStatus status, String game, String url)
     {
         bot.getPresence().setStatus(status);
+        bot.getPresence().setGame( Game.of(game, url) );
     }
     //</editor-fold>
 
