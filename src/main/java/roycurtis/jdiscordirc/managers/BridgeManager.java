@@ -123,7 +123,11 @@ public class BridgeManager
     public void onIRCKick(User target, User kicker, String reason)
     {
         queue.add( () -> {
-            DISCORD.sendMessage("**%s** was kicked by **%s** (_%s_)",
+            String reasonPart = Strings.isNullOrEmpty(reason)
+                ? ""
+                : "(_" + reason + "_)";
+
+            DISCORD.sendMessage("**%s** was kicked by **%s** %s",
                 target.getNick(),
                 kicker.getNick(),
                 reason
