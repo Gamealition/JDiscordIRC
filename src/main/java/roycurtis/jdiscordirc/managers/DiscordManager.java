@@ -114,7 +114,7 @@ public class DiscordManager extends ListenerAdapter
         log( "[Discord] Message from %s with %s attachment(s): %s",
             event.getMember().getEffectiveName(),
             event.getMessage().getAttachments().size(),
-            event.getMessage().getContent()
+            event.getMessage().getStrippedContent()
         );
         BRIDGE.onDiscordMessage(event);
     }
