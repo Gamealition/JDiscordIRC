@@ -58,7 +58,7 @@ public class BridgeManager
     public void onIRCConnect()
     {
         queue.add( () -> {
-            DISCORD.sendMessage("Connected to IRC");
+            DISCORD.sendMessage("••• Connected to IRC");
             DISCORD.setStatus(
                 OnlineStatus.ONLINE,
                 IRCManager.CHANNEL + " @ " + IRCManager.SERVER,
@@ -156,7 +156,7 @@ public class BridgeManager
     {
         queue.add( () -> {
             IRC.setAway("");
-            IRC.sendMessage("Connected to Discord");
+            IRC.sendMessage("••• Connected to Discord");
 
             // Courtesy message for those on Discord
             DISCORD.sendMessage( IRC.isAvailable()
