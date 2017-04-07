@@ -70,7 +70,7 @@ public class BridgeManager
             DISCORD.sendMessage("••• Connected to IRC");
             DISCORD.setStatus(
                 OnlineStatus.ONLINE,
-                IRCManager.CHANNEL + " @ " + IRCManager.SERVER,
+                IRC.getChannel() + " @ " + IRC.getServer(),
                 "https://irc.gamealition.com"
             );
 

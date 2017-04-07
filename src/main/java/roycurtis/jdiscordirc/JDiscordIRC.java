@@ -34,9 +34,9 @@ public class JDiscordIRC
     {
         try
         {
-            CONFIG.init();
-            DISCORD.init();
-            IRC.init();
+            if ( !isExiting() ) CONFIG.init();
+            if ( !isExiting() ) DISCORD.init();
+            if ( !isExiting() ) IRC.init();
         }
         catch (Exception ex)
         {

@@ -14,36 +14,43 @@ import roycurtis.jdiscordirc.JDiscordIRC;
 import java.nio.charset.StandardCharsets;
 
 import static roycurtis.jdiscordirc.JDiscordIRC.BRIDGE;
+import static roycurtis.jdiscordirc.JDiscordIRC.CONFIG;
 import static roycurtis.jdiscordirc.JDiscordIRC.IRC;
 
 public class IRCManager extends ListenerAdapter
 {
     private static final Logger LOG = LoggerFactory.getLogger(IRCManager.class);
 
-    // TODO: Make these config
-    public static final String SERVER   = "irc.us.gamesurge.net";
-    public static final String CHANNEL  = "#vprottest";
-    public static final String NICKNAME = "GDiscord";
-
     private PircBotX bot;
     private Thread   thread;
     private boolean  wasConnected;
+    private String   server;
+    private String   channel;
+    private String   nickname;
+    private String   username;
+    private String   realname;
 
     //<editor-fold desc="Manager methods (main thread)">
     public void init() throws Exception
     {
         LOG.info("Connecting for first time...");
 
+        server   = CONFIG.get("irc.server");
+        channel  = CONFIG.get("irc.channel");
+        nickname = CONFIG.get("irc.nickname");
+        username = CONFIG.get("irc.username");
+        realname = CONFIG.get("irc.realname");
+
         Configuration config = new Configuration.Builder()
-            .setName(NICKNAME)
-            .setLogin("JDiscordIRC")
-            .setRealName("JDiscordIRC alpha test")
+            .setName(nickname)
+            .setLogin(username)
+            .setRealName(realname)
             .setEncoding(StandardCharsets.UTF_8)
             .setAutoNickChange(true)
             .setAutoReconnect(true)
             .setAutoReconnectAttempts(Integer.MAX_VALUE)
             .setAutoReconnectDelay(5000)
-            .addServer(SERVER)
+            .addServer(server)
             .addListener(this)
             .buildConfiguration();
 
@@ -63,7 +70,17 @@ public class IRCManager extends ListenerAdapter
         else if ( !bot.isConnected() )
             return false;
         else
-            return bot.getUserChannelDao().containsChannel(CHANNEL);
+            return bot.getUserChannelDao().containsChannel(channel);
+    }
+
+    public String getServer()
+    {
+        return server;
+    }
+
+    public String getChannel()
+    {
+        return channel;
     }
 
     public void sendMessage(String msg, Object... parts)
@@ -76,7 +93,7 @@ public class IRCManager extends ListenerAdapter
 
         String fullMsg = String.format(msg, parts);
         LOG.info( "Sent: {}", Colors.removeFormattingAndColors(fullMsg) );
-        IRC.bot.send().message(CHANNEL, fullMsg);
+        IRC.bot.send().message(channel, fullMsg);
     }
 
     public void sendAction(String who, String action)
@@ -92,7 +109,7 @@ public class IRCManager extends ListenerAdapter
             Colors.BOLD, who, Colors.NORMAL,
             action
         );
-        IRC.bot.send().action(CHANNEL, action);
+        IRC.bot.send().action(channel, action);
     }
 
     public void setAway(String msg)
@@ -120,7 +137,7 @@ public class IRCManager extends ListenerAdapter
         LOG.info("Connected successfully");
         // We don't use auto-join, because if the bot gets kicked we simply disconnect. The auto
         // reconnect doesn't honor channel auto-join.
-        bot.send().joinChannel(CHANNEL);
+        bot.send().joinChannel(channel);
     }
 
     @Override

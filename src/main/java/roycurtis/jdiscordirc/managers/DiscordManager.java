@@ -19,30 +19,34 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static roycurtis.jdiscordirc.JDiscordIRC.BRIDGE;
+import static roycurtis.jdiscordirc.JDiscordIRC.CONFIG;
 
 public class DiscordManager extends ListenerAdapter
 {
-    private static final Logger LOG = LoggerFactory.getLogger(DiscordManager.class);
-
-    // TODO: Make these config
-    public static final String GUILD   = "299214234645037056";
-    public static final String CHANNEL = "299214234645037056";
-    public static final String TOKEN   = "";
-
+    private static final Logger  LOG     = LoggerFactory.getLogger(DiscordManager.class);
     private static final Pattern MENTION = Pattern.compile("\\B@([\\S]+)\\b");
 
-    private JDA bot;
+    private JDA    bot;
+    private String token;
+    private String guildId;
+    private String channelId;
+    private String url;
 
     //<editor-fold desc="Manager methods (main thread)">
     public void init() throws Exception
     {
         LOG.info("Connecting for first time...");
 
+        token     = CONFIG.get("discord.token");
+        guildId   = CONFIG.get("discord.guild");
+        channelId = CONFIG.get("discord.channel");
+        url       = CONFIG.get("discord.url");
+
         bot = new JDABuilder(AccountType.BOT)
             .setAudioEnabled(false)
-            .setToken(TOKEN)
+            .setToken(token)
             .setStatus(OnlineStatus.DO_NOT_DISTURB)
-            .setGame( Game.of("Connecting to IRC...", "https://irc.gamealition.com") )
+            .setGame( Game.of("Connecting to IRC...", url) )
             .addEventListener(this)
             .buildAsync();
     }
@@ -64,7 +68,7 @@ public class DiscordManager extends ListenerAdapter
 
         String fullMsg = String.format(msg, parts);
         LOG.info("Sent: {}", fullMsg);
-        bot.getTextChannelById(CHANNEL)
+        bot.getTextChannelById(channelId)
             .sendMessage(fullMsg)
             .complete();
     }
@@ -79,8 +83,8 @@ public class DiscordManager extends ListenerAdapter
 
         String      fullMsg = String.format(msg, parts);
         Matcher     matcher = MENTION.matcher(fullMsg);
-        TextChannel channel = bot.getTextChannelById(CHANNEL);
-        Guild       guild   = bot.getGuildById(GUILD);
+        TextChannel channel = bot.getTextChannelById(channelId);
+        Guild       guild   = bot.getGuildById(guildId);
 
         // Skip processing mentions if none seem to exist
         if ( !matcher.find() )
@@ -165,7 +169,7 @@ public class DiscordManager extends ListenerAdapter
             return;
 
         // Ignore messages from other channels
-        if ( !event.getChannel().getId().contentEquals(CHANNEL) )
+        if ( !event.getChannel().getId().contentEquals(channelId) )
             return;
 
         LOG.trace( "Message from {} with {} attachment(s): {}",
@@ -180,7 +184,7 @@ public class DiscordManager extends ListenerAdapter
     public void onGuildMemberJoin(GuildMemberJoinEvent event)
     {
         // Ignore from other servers
-        if ( !event.getGuild().getId().contentEquals(GUILD) )
+        if ( !event.getGuild().getId().contentEquals(guildId) )
             return;
 
         LOG.trace( "{} joined the server", event.getMember().getEffectiveName() );
@@ -191,7 +195,7 @@ public class DiscordManager extends ListenerAdapter
     public void onGuildMemberLeave(GuildMemberLeaveEvent event)
     {
         // Ignore from other servers
-        if ( !event.getGuild().getId().contentEquals(GUILD) )
+        if ( !event.getGuild().getId().contentEquals(guildId) )
             return;
 
         LOG.trace( "{} quit the server", event.getMember().getEffectiveName() );
@@ -202,7 +206,7 @@ public class DiscordManager extends ListenerAdapter
     public void onGuildMemberNickChange(GuildMemberNickChangeEvent event)
     {
         // Ignore from other servers
-        if ( !event.getGuild().getId().contentEquals(GUILD) )
+        if ( !event.getGuild().getId().contentEquals(guildId) )
             return;
 
         String oldNick = event.getPrevNick();
