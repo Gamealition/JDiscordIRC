@@ -30,6 +30,9 @@ public class BridgeManager
     //<editor-fold desc="Manager methods (main thread)">
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
 
+    private boolean ircFirstTime     = true;
+    private boolean discordFirstTime = true;
+
     /** Executes a task from the queue in the main thread, to maintain order */
     public void pump()
     {
@@ -71,13 +74,19 @@ public class BridgeManager
             if ( DISCORD.isAvailable() )
             {
                 IRC.setAway("");
-                IRC.sendMessage("••• Now bridging chat between Discord and IRC");
+                IRC.sendMessage(ircFirstTime
+                    ? "••• Now bridging chat between Discord and IRC"
+                    : "••• Lost connection; restored bridge between Discord and IRC");
             }
             else
             {
                 IRC.setAway("Waiting for connection to Discord...");
-                IRC.sendMessage("••• Bridging chat between Discord and IRC shortly...");
+                IRC.sendMessage(ircFirstTime
+                    ? "••• Waiting for connection to Discord..."
+                    : "••• Lost connection to both Discord and IRC; reconnecting to Discord...");
             }
+
+            ircFirstTime = false;
         } );
     }
 
@@ -161,10 +170,18 @@ public class BridgeManager
             IRC.sendMessage("••• Connected to Discord");
 
             // Courtesy message for those on Discord
-            DISCORD.sendMessage( IRC.isAvailable()
-                ? "••• Now bridging chat between Discord and IRC"
-                : "••• Bridging chat between Discord and IRC shortly..."
-            );
+            if ( IRC.isAvailable() )
+                DISCORD.sendMessage(discordFirstTime
+                    ? "••• Now bridging chat between Discord and IRC"
+                    : "••• Lost connection; restored bridge between Discord and IRC"
+                );
+            else
+                DISCORD.sendMessage(discordFirstTime
+                    ? "••• Waiting for connection to IRC..."
+                    : "••• Lost connection to both Discord and IRC; reconnecting to IRC..."
+                );
+
+            discordFirstTime = false;
         } );
     }
 
