@@ -69,12 +69,12 @@ public class BridgeManager
             if ( DISCORD.isAvailable() )
             {
                 IRC.setAway("");
-                IRC.sendMessage("Hello! I am now bridging chat between Discord and IRC");
+                IRC.sendMessage("••• Now bridging chat between Discord and IRC");
             }
             else
             {
                 IRC.setAway("Waiting for connection to Discord...");
-                IRC.sendMessage("Hello! I will bridge chat between Discord and IRC momentarily...");
+                IRC.sendMessage("••• Bridging chat between Discord and IRC shortly...");
             }
         } );
     }
@@ -82,7 +82,7 @@ public class BridgeManager
     public void onIRCDisconnect()
     {
         queue.add( () -> {
-            DISCORD.sendMessage("Lost connection to IRC; reconnecting...");
+            DISCORD.sendMessage("••• Lost connection to IRC; reconnecting...");
             DISCORD.setStatus(
                 OnlineStatus.DO_NOT_DISTURB,
                 "Connecting to IRC...",
@@ -103,7 +103,7 @@ public class BridgeManager
 
     public void onIRCJoin(User user)
     {
-        queue.add( () -> DISCORD.sendMessage( "**%s** joined the channel", user.getNick() ) );
+        queue.add( () -> DISCORD.sendMessage( "••• **%s** joined the channel", user.getNick() ) );
     }
 
     public void onIRCPart(User user, final String reason)
@@ -113,7 +113,7 @@ public class BridgeManager
                 ? ""
                 : "(_" + reason + "_)";
 
-            DISCORD.sendMessage("**%s** left the channel %s", user.getNick(), reasonPart);
+            DISCORD.sendMessage("••• **%s** left the channel %s", user.getNick(), reasonPart);
         });
     }
 
@@ -124,7 +124,7 @@ public class BridgeManager
                 ? ""
                 : "(_" + reason + "_)";
 
-            DISCORD.sendMessage("**%s** quit the server %s", user.getNick(), reasonPart);
+            DISCORD.sendMessage("••• **%s** quit the server %s", user.getNick(), reasonPart);
         });
     }
 
@@ -135,7 +135,7 @@ public class BridgeManager
                 ? ""
                 : "(_" + reason + "_)";
 
-            DISCORD.sendMessage("**%s** was kicked by **%s** %s",
+            DISCORD.sendMessage("••• **%s** was kicked by **%s** %s",
                 target.getNick(),
                 kicker.getNick(),
                 reason
@@ -146,7 +146,7 @@ public class BridgeManager
     public void onIRCNickChange(String oldNick, String newNick)
     {
         queue.add( () -> {
-            DISCORD.sendMessage("**%s** changed nick to **%s**", oldNick, newNick);
+            DISCORD.sendMessage("••• **%s** changed nick to **%s**", oldNick, newNick);
         } );
     }
     //</editor-fold>
@@ -160,8 +160,8 @@ public class BridgeManager
 
             // Courtesy message for those on Discord
             DISCORD.sendMessage( IRC.isAvailable()
-                ? "Hello! I am now bridging chat between Discord and IRC"
-                : "Hello! I will bridge chat between Discord and IRC momentarily..."
+                ? "••• Now bridging chat between Discord and IRC"
+                : "••• Bridging chat between Discord and IRC shortly..."
             );
         } );
     }
@@ -170,7 +170,7 @@ public class BridgeManager
     {
         queue.add( () -> {
             IRC.setAway("Waiting for connection to Discord...");
-            IRC.sendMessage("Lost connection to Discord; reconnecting. . .");
+            IRC.sendMessage("••• Lost connection to Discord; reconnecting. . .");
         });
     }
 
@@ -196,7 +196,7 @@ public class BridgeManager
         queue.add( () -> {
             String who = event.getMember().getEffectiveName();
 
-            IRC.sendMessage( "%s%s%s joined the server",
+            IRC.sendMessage( "••• %s%s%s joined the server",
                 Colors.BOLD, who, Colors.NORMAL
             );
         });
@@ -207,7 +207,7 @@ public class BridgeManager
         queue.add( () -> {
             String who = event.getMember().getEffectiveName();
 
-            IRC.sendMessage( "%s%s%s quit the server",
+            IRC.sendMessage( "••• %s%s%s quit the server",
                 Colors.BOLD, who, Colors.NORMAL
             );
         });
