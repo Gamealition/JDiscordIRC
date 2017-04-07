@@ -1,6 +1,7 @@
 package roycurtis.jdiscordirc.managers;
 
 import com.google.common.base.Strings;
+import com.vdurmont.emoji.EmojiParser;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
@@ -195,6 +196,7 @@ public class BridgeManager
                 msg += " " + String.join(" ", attaches);
 
             msg = msg.trim();
+            msg = EmojiParser.parseToAliases(msg, EmojiParser.FitzpatrickAction.REMOVE);
 
             // Special handling for Discord action messages
             if ( msg.startsWith("_") && msg.endsWith("_") )

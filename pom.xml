@@ -53,6 +53,12 @@
             <artifactId>pircbotx</artifactId>
             <version>2.1</version>
         </dependency>
+        <!-- Emoji library -->
+        <dependency>
+            <groupId>com.vdurmont</groupId>
+            <artifactId>emoji-java</artifactId>
+            <version>LATEST</version>
+        </dependency>
     </dependencies>
 
     <!-- Project settings -->
