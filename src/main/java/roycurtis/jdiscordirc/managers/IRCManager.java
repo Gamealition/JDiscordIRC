@@ -75,7 +75,7 @@ public class IRCManager extends ListenerAdapter
         }
 
         String fullMsg = String.format(msg, parts);
-        LOG.info("Sent: {}", fullMsg);
+        LOG.info( "Sent: {}", Colors.removeFormattingAndColors(fullMsg) );
         IRC.bot.send().message(CHANNEL, fullMsg);
     }
 
@@ -87,7 +87,7 @@ public class IRCManager extends ListenerAdapter
             return;
         }
 
-        LOG.info("Sent: {} {}", who, action);
+        LOG.info( "Sent: {} {}", who, Colors.removeFormattingAndColors(action) );
         action = String.format("%s%s%s %s",
             Colors.BOLD, who, Colors.NORMAL,
             action
@@ -153,8 +153,11 @@ public class IRCManager extends ListenerAdapter
         if ( user.equals( bot.getUserBot() ) )
             return;
 
-        LOG.trace( "Message from {}: {}", user.getNick(), event.getMessage() );
-        BRIDGE.onIRCMessage( user, event.getMessage() );
+        // Don't bother with IRC formatting
+        String message = Colors.removeFormattingAndColors( event.getMessage() );
+
+        LOG.trace("Message from {}: {}", user.getNick(), message);
+        BRIDGE.onIRCMessage(user, message);
     }
 
     @Override
@@ -168,14 +171,17 @@ public class IRCManager extends ListenerAdapter
         if ( user.equals( bot.getUserBot() ) )
             return;
 
-        LOG.trace( "Action from {}: {}", user.getNick(), event.getAction() );
-        BRIDGE.onIRCAction( user, event.getAction() );
+        // Don't bother with IRC formatting
+        String action = Colors.removeFormattingAndColors( event.getAction() );
+
+        LOG.trace("Action from {}: {}", user.getNick(), action);
+        BRIDGE.onIRCAction(user, action);
     }
 
     @Override
     public void onNotice(NoticeEvent event) throws Exception
     {
-        LOG.info( "Notice: {}", event.getMessage() );
+        LOG.info( "Notice: {}", Colors.removeFormattingAndColors( event.getMessage() ) );
     }
 
     @Override
@@ -183,9 +189,13 @@ public class IRCManager extends ListenerAdapter
     {
         User user = event.getUser();
         if (user == null)
-            LOG.info( "Private from unknown: {}", event.getMessage() );
+            LOG.info("Private from unknown: {}",
+                Colors.removeFormattingAndColors( event.getMessage() )
+            );
         else
-            LOG.info( "Private from {}: {}", user.getNick(), event.getMessage() );
+            LOG.info("Private from {}: {}",
+                user.getNick(), Colors.removeFormattingAndColors( event.getMessage() )
+            );
     }
 
     @Override
