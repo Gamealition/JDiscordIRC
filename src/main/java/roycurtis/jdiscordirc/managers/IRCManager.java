@@ -167,7 +167,7 @@ public class IRCManager extends ListenerAdapter
     @Override
     public void onNotice(NoticeEvent event) throws Exception
     {
-        log( "[IRC] Notice from %s: %s", event.getChannelSource(), event.getMessage() );
+        log( "[IRC] Notice: %s", event.getMessage() );
     }
 
     @Override
@@ -177,7 +177,7 @@ public class IRCManager extends ListenerAdapter
         if (user == null)
             log( "[IRC] Private from unknown: %s", event.getMessage() );
         else
-            log( "[IRC] Private from %s: %s", user.getHostmask(), event.getMessage() );
+            log( "[IRC] Private from %s: %s", user.getNick(), event.getMessage() );
     }
 
     @Override
