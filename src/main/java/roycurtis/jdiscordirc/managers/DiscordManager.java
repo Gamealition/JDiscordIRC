@@ -1,10 +1,7 @@
 package roycurtis.jdiscordirc.managers;
 
 import net.dv8tion.jda.core.*;
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
@@ -14,16 +11,19 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static roycurtis.jdiscordirc.JDiscordIRC.BRIDGE;
-import static roycurtis.jdiscordirc.JDiscordIRC.log;
 
 public class DiscordManager extends ListenerAdapter
 {
+    private static final Logger LOG = LoggerFactory.getLogger(DiscordManager.class);
+
     // TODO: Make these config
     public static final String GUILD   = "299214234645037056";
     public static final String CHANNEL = "299214234645037056";
@@ -36,7 +36,7 @@ public class DiscordManager extends ListenerAdapter
     //<editor-fold desc="Manager methods (main thread)">
     public void init() throws Exception
     {
-        log("[Discord] Connecting for first time...");
+        LOG.info("Connecting for first time...");
 
         bot = new JDABuilder(AccountType.BOT)
             .setAudioEnabled(false)
@@ -58,12 +58,12 @@ public class DiscordManager extends ListenerAdapter
     {
         if ( !isAvailable() )
         {
-            log("[Discord] Rejecting message; Discord unavailable: %s", msg);
+            LOG.debug("Rejecting message; Discord unavailable: {}", msg);
             return;
         }
 
         String fullMsg = String.format(msg, parts);
-        log("Discord: %s", fullMsg);
+        LOG.info("Sent: {}", fullMsg);
         bot.getTextChannelById(CHANNEL)
             .sendMessage(fullMsg)
             .complete();
@@ -73,22 +73,20 @@ public class DiscordManager extends ListenerAdapter
     {
         if ( !isAvailable() )
         {
-            log("[Discord] Rejecting message; Discord unavailable: %s", msg);
+            LOG.debug("Rejecting message; Discord unavailable: {}", msg);
             return;
         }
 
-        String  fullMsg = String.format(msg, parts);
-        Matcher matcher = MENTION.matcher(fullMsg);
-        Channel channel = bot.getTextChannelById(CHANNEL);
-        Guild   guild   = bot.getGuildById(GUILD);
+        String      fullMsg = String.format(msg, parts);
+        Matcher     matcher = MENTION.matcher(fullMsg);
+        TextChannel channel = bot.getTextChannelById(CHANNEL);
+        Guild       guild   = bot.getGuildById(GUILD);
 
         // Skip processing mentions if none seem to exist
         if ( !matcher.find() )
         {
-            log("Discord: %s", fullMsg);
-            bot.getTextChannelById(CHANNEL)
-                .sendMessage(fullMsg)
-                .complete();
+            LOG.info("Sent: {}", fullMsg);
+            channel.sendMessage(fullMsg).complete();
             return;
         }
 
@@ -119,10 +117,8 @@ public class DiscordManager extends ListenerAdapter
         matcher.appendTail(buffer);
         fullMsg = buffer.toString();
 
-        log("Discord: %s", fullMsg);
-        bot.getTextChannelById(CHANNEL)
-            .sendMessage(fullMsg)
-            .complete();
+        LOG.info("Sent: {}", fullMsg);
+        channel.sendMessage(fullMsg).complete();
     }
 
     public void setStatus(OnlineStatus status, String game, String url)
@@ -136,28 +132,28 @@ public class DiscordManager extends ListenerAdapter
     @Override
     public void onReady(ReadyEvent event)
     {
-        log("[Discord] Connected successfully");
+        LOG.info("Connected successfully");
         BRIDGE.onDiscordConnect();
     }
 
     @Override
     public void onReconnect(ReconnectedEvent event)
     {
-        log("[Discord] Reconnected");
+        LOG.info("Reconnected");
         BRIDGE.onDiscordConnect();
     }
 
     @Override
     public void onResume(ResumedEvent event)
     {
-        log("[Discord] Reconnected");
+        LOG.info("Reconnected");
         BRIDGE.onDiscordConnect();
     }
 
     @Override
     public void onDisconnect(DisconnectEvent event)
     {
-        log( "[Discord] Lost connection (%s); reconnecting...", event.getCloseCode() );
+        LOG.warn( "Lost connection ({}); reconnecting...", event.getCloseCode() );
         BRIDGE.onDiscordDisconnect();
     }
 
@@ -172,7 +168,7 @@ public class DiscordManager extends ListenerAdapter
         if ( !event.getChannel().getId().contentEquals(CHANNEL) )
             return;
 
-        log( "[Discord] Message from %s with %s attachment(s): %s",
+        LOG.trace( "Message from {} with {} attachment(s): {}",
             event.getMember().getEffectiveName(),
             event.getMessage().getAttachments().size(),
             event.getMessage().getStrippedContent()
@@ -187,7 +183,7 @@ public class DiscordManager extends ListenerAdapter
         if ( !event.getGuild().getId().contentEquals(GUILD) )
             return;
 
-        log( "[Discord] %s joined the server", event.getMember().getEffectiveName() );
+        LOG.trace( "{} joined the server", event.getMember().getEffectiveName() );
         BRIDGE.onDiscordUserJoin(event);
     }
 
@@ -198,7 +194,7 @@ public class DiscordManager extends ListenerAdapter
         if ( !event.getGuild().getId().contentEquals(GUILD) )
             return;
 
-        log( "[Discord] %s quit the server", event.getMember().getEffectiveName() );
+        LOG.trace( "{} quit the server", event.getMember().getEffectiveName() );
         BRIDGE.onDiscordUserLeave(event);
     }
 
@@ -216,7 +212,7 @@ public class DiscordManager extends ListenerAdapter
         if (oldNick == null) oldNick = event.getMember().getUser().getName();
         if (newNick == null) newNick = event.getMember().getUser().getName();
 
-        log("[Discord] %s changed nick to %s", oldNick, newNick);
+        LOG.trace("{} changed nick to {}", oldNick, newNick);
         BRIDGE.onDiscordNickChange(oldNick, newNick);
     }
     //</editor-fold>

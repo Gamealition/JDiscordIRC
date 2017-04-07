@@ -7,16 +7,19 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.User;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import roycurtis.jdiscordirc.JDiscordIRC;
 
 import java.nio.charset.StandardCharsets;
 
 import static roycurtis.jdiscordirc.JDiscordIRC.BRIDGE;
 import static roycurtis.jdiscordirc.JDiscordIRC.IRC;
-import static roycurtis.jdiscordirc.JDiscordIRC.log;
 
 public class IRCManager extends ListenerAdapter
 {
+    private static final Logger LOG = LoggerFactory.getLogger(IRCManager.class);
+
     // TODO: Make these config
     public static final String SERVER   = "irc.us.gamesurge.net";
     public static final String CHANNEL  = "#vprottest";
@@ -29,7 +32,7 @@ public class IRCManager extends ListenerAdapter
     //<editor-fold desc="Manager methods (main thread)">
     public void init() throws Exception
     {
-        log("[IRC] Connecting for first time...");
+        LOG.info("Connecting for first time...");
 
         Configuration config = new Configuration.Builder()
             .setName(NICKNAME)
@@ -67,12 +70,12 @@ public class IRCManager extends ListenerAdapter
     {
         if ( !isAvailable() )
         {
-            log("[IRC] Rejecting message; IRC unavailable: %s", msg);
+            LOG.debug("Rejecting message; IRC unavailable: {}", msg);
             return;
         }
 
         String fullMsg = String.format(msg, parts);
-        log("IRC: %s", fullMsg);
+        LOG.info("Sent: {}", fullMsg);
         IRC.bot.send().message(CHANNEL, fullMsg);
     }
 
@@ -80,11 +83,11 @@ public class IRCManager extends ListenerAdapter
     {
         if ( !isAvailable() )
         {
-            log("[IRC] Rejecting action; IRC unavailable: %s", action);
+            LOG.debug("Rejecting action; IRC unavailable: {}", action);
             return;
         }
 
-        log("IRC: %s %s", who, action);
+        LOG.info("Sent: {} {}", who, action);
         action = String.format("%s%s%s %s",
             Colors.BOLD, who, Colors.NORMAL,
             action
@@ -96,14 +99,14 @@ public class IRCManager extends ListenerAdapter
     {
         if ( !isAvailable() )
         {
-            log("[IRC] Rejecting away; IRC unavailable: %s", msg);
+            LOG.debug("Rejecting away; IRC unavailable: {}", msg);
             return;
         }
 
         if ( Strings.isNullOrEmpty(msg) )
-            log("[IRC] Removing away message");
+            LOG.debug("Removing away message");
         else
-            log("[IRC] Setting away message to: %s", msg);
+            LOG.debug("Setting away message to: {}", msg);
 
         IRC.bot.sendRaw().rawLine("AWAY :" + msg);
     }
@@ -114,7 +117,7 @@ public class IRCManager extends ListenerAdapter
     public void onConnect(ConnectEvent event) throws Exception
     {
         // We won't send connect to bridge; all we care about is joining channel
-        log("[IRC] Connected");
+        LOG.info("Connected successfully");
         // We don't use auto-join, because if the bot gets kicked we simply disconnect. The auto
         // reconnect doesn't honor channel auto-join.
         bot.send().joinChannel(CHANNEL);
@@ -123,7 +126,7 @@ public class IRCManager extends ListenerAdapter
     @Override
     public void onConnectAttemptFailed(ConnectAttemptFailedEvent event) throws Exception
     {
-        log("[IRC] Could not connect; retrying...");
+        LOG.warn("Could not connect; retrying...");
     }
 
     @Override
@@ -131,12 +134,12 @@ public class IRCManager extends ListenerAdapter
     {
         if (wasConnected)
         {
-            log( "[IRC] Lost connection (%s); reconnecting...", event.getDisconnectException() );
+            LOG.warn( "Lost connection ({}); reconnecting...", event.getDisconnectException() );
             wasConnected = false;
             BRIDGE.onIRCDisconnect();
         }
         else
-            log( "[IRC] Could not connect (%s); retrying...", event.getDisconnectException() );
+            LOG.warn( "Could not connect ({}); retrying...", event.getDisconnectException() );
     }
 
     @Override
@@ -150,7 +153,7 @@ public class IRCManager extends ListenerAdapter
         if ( user.equals( bot.getUserBot() ) )
             return;
 
-        log( "[IRC] Message from %s: %s", user.getNick(), event.getMessage() );
+        LOG.trace( "Message from {}: {}", user.getNick(), event.getMessage() );
         BRIDGE.onIRCMessage( user, event.getMessage() );
     }
 
@@ -165,14 +168,14 @@ public class IRCManager extends ListenerAdapter
         if ( user.equals( bot.getUserBot() ) )
             return;
 
-        log( "[IRC] Action from %s: %s", user.getNick(), event.getAction() );
+        LOG.trace( "Action from {}: {}", user.getNick(), event.getAction() );
         BRIDGE.onIRCAction( user, event.getAction() );
     }
 
     @Override
     public void onNotice(NoticeEvent event) throws Exception
     {
-        log( "[IRC] Notice: %s", event.getMessage() );
+        LOG.info( "Notice: {}", event.getMessage() );
     }
 
     @Override
@@ -180,9 +183,9 @@ public class IRCManager extends ListenerAdapter
     {
         User user = event.getUser();
         if (user == null)
-            log( "[IRC] Private from unknown: %s", event.getMessage() );
+            LOG.info( "Private from unknown: {}", event.getMessage() );
         else
-            log( "[IRC] Private from %s: %s", user.getNick(), event.getMessage() );
+            LOG.info( "Private from {}: {}", user.getNick(), event.getMessage() );
     }
 
     @Override
@@ -194,13 +197,13 @@ public class IRCManager extends ListenerAdapter
 
         if ( user.equals( bot.getUserBot() ) )
         {
-            log( "[IRC] Joined channel successfully", user.getHostmask() );
+            LOG.trace( "Joined channel successfully", user.getHostmask() );
             BRIDGE.onIRCConnect();
             wasConnected = true;
         }
         else
         {
-            log( "[IRC] %s joined the channel", event.getUser().getHostmask() );
+            LOG.trace( "{} joined the channel", event.getUser().getHostmask() );
             BRIDGE.onIRCJoin(user);
         }
     }
@@ -212,7 +215,7 @@ public class IRCManager extends ListenerAdapter
         if (user == null)
             return;
 
-        log( "[IRC] %s parted the channel (%s)", user.getHostmask(), event.getReason() );
+        LOG.trace( "{} parted the channel ({})", user.getHostmask(), event.getReason() );
         BRIDGE.onIRCPart( user, event.getReason() );
     }
 
@@ -223,7 +226,7 @@ public class IRCManager extends ListenerAdapter
         if (user == null)
             return;
 
-        log( "[IRC] %s quit the server (%s)", user.getHostmask(), event.getReason() );
+        LOG.trace( "{} quit the server ({})", user.getHostmask(), event.getReason() );
         BRIDGE.onIRCQuit( user, event.getReason() );
     }
 
@@ -238,7 +241,7 @@ public class IRCManager extends ListenerAdapter
         // Handle self-kick
         if ( target.equals( bot.getUserBot() ) )
         {
-            log( "[IRC] Kicked off by %s (%s); disconnecting and reconnecting...",
+            LOG.warn( "Kicked off by {} ({}); disconnecting and reconnecting...",
                 kicker.getNick(),
                 event.getReason()
             );
@@ -247,7 +250,7 @@ public class IRCManager extends ListenerAdapter
             return;
         }
 
-        log( "[IRC] %s kicked from channel by %s (%s)",
+        LOG.trace( "{} kicked from channel by {} ({})",
             target.getNick(),
             kicker.getNick(),
             event.getReason()
@@ -262,7 +265,7 @@ public class IRCManager extends ListenerAdapter
         if (user == null)
             return;
 
-        log( "[IRC] %s changed nick to %s", event.getOldNick(), event.getNewNick() );
+        LOG.trace( "{} changed nick to {}", event.getOldNick(), event.getNewNick() );
         BRIDGE.onIRCNickChange( event.getOldNick(), event.getNewNick() );
     }
     //</editor-fold>

@@ -10,6 +10,8 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.pircbotx.Colors;
 import org.pircbotx.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import roycurtis.jdiscordirc.util.CurrentThread;
 
 import java.util.Queue;
@@ -28,6 +30,8 @@ import static roycurtis.jdiscordirc.JDiscordIRC.*;
  */
 public class BridgeManager
 {
+    private static final Logger LOG = LoggerFactory.getLogger(BridgeManager.class);
+
     //<editor-fold desc="Manager methods (main thread)">
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
 
@@ -49,13 +53,12 @@ public class BridgeManager
         {
             task.run();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            log( "[!] Exception during bridge event: %s", e.getMessage() );
-            e.printStackTrace();
+            LOG.error("Exception during bridge event: {}", ex);
         }
 
-        log( "[Bridge] Pumped events; %d remain", queue.size() );
+        LOG.trace( "[Bridge] Pumped events; {} remain", queue.size() );
         CurrentThread.sleep(10);
     }
     //</editor-fold>
@@ -205,7 +208,7 @@ public class BridgeManager
 
             if (msg.isEmpty() && attaches.length <= 0)
             {
-                log("[Bridge] Skipping empty Discord message by %s", who);
+                LOG.info("[Bridge] Skipping empty Discord message by {}", who);
                 return;
             }
 
