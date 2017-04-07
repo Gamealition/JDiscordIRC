@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.events.ReconnectedEvent;
 import net.dv8tion.jda.core.events.ResumedEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -138,6 +139,24 @@ public class DiscordManager extends ListenerAdapter
 
         log( "[Discord] %s quit the server", event.getMember().getEffectiveName() );
         BRIDGE.onDiscordUserLeave(event);
+    }
+
+    @Override
+    public void onGuildMemberNickChange(GuildMemberNickChangeEvent event)
+    {
+        // Ignore from other servers
+        if ( !event.getGuild().getId().contentEquals(GUILD) )
+            return;
+
+        String oldNick = event.getPrevNick();
+        String newNick = event.getNewNick();
+
+        // Adding or removing a nickname means one or the other is null
+        if (oldNick == null) oldNick = event.getMember().getUser().getName();
+        if (newNick == null) newNick = event.getMember().getUser().getName();
+
+        log("[Discord] %s changed nick to %s", oldNick, newNick);
+        BRIDGE.onDiscordNickChange(oldNick, newNick);
     }
     //</editor-fold>
 }

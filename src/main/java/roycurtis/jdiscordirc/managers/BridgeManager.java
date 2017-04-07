@@ -196,8 +196,8 @@ public class BridgeManager
                 msg += " " + String.join(" ", attaches);
 
             msg = msg.trim();
-            who = EmojiParser.parseToAliases(who, EmojiParser.FitzpatrickAction.REMOVE);
-            msg = EmojiParser.parseToAliases(msg, EmojiParser.FitzpatrickAction.REMOVE);
+            who = EmojiParser.parseToAliases(who);
+            msg = EmojiParser.parseToAliases(msg);
 
             // Special handling for Discord action messages
             if ( msg.startsWith("_") && msg.endsWith("_") )
@@ -216,7 +216,7 @@ public class BridgeManager
             String who = event.getMember().getEffectiveName();
 
             IRC.sendMessage( "••• %s%s%s joined the server",
-                Colors.BOLD, who, Colors.NORMAL
+                Colors.BOLD, EmojiParser.parseToAliases(who), Colors.NORMAL
             );
         });
     }
@@ -226,10 +226,20 @@ public class BridgeManager
         queue.add( () -> {
             String who = event.getMember().getEffectiveName();
 
-            IRC.sendMessage( "••• %s%s%s quit the server",
-                Colors.BOLD, who, Colors.NORMAL
+            IRC.sendMessage("••• %s%s%s quit the server",
+                Colors.BOLD, EmojiParser.parseToAliases(who), Colors.NORMAL
             );
         });
+    }
+
+    public void onDiscordNickChange(String oldNick, String newNick)
+    {
+        queue.add( () -> {
+            IRC.sendMessage("••• %s%s%s changed nick to %s%s%s",
+                Colors.BOLD, EmojiParser.parseToAliases(oldNick), Colors.NORMAL,
+                Colors.BOLD, EmojiParser.parseToAliases(newNick), Colors.NORMAL
+            );
+        } );
     }
     //</editor-fold>
 }
