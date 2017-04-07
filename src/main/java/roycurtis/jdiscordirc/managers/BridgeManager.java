@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.pircbotx.Colors;
 import org.pircbotx.User;
 import roycurtis.jdiscordirc.util.CurrentThread;
@@ -212,17 +213,38 @@ public class BridgeManager
             if (attaches.length > 0)
                 msg += " " + String.join(" ", attaches);
 
-            msg = msg.trim();
-            msg = EmojiParser.parseToAliases(msg);
+            String  finalMsg = EmojiParser.parseToAliases( msg.trim() );
+            boolean isAction = false;
 
             // Special handling for Discord action messages
-            if ( msg.startsWith("_") && msg.endsWith("_") )
-                IRC.sendAction( who, msg.substring( 1, msg.length() - 1 ) );
-            else
-                IRC.sendMessage("<%s%s%s> %s",
-                    Colors.BOLD, who, Colors.NORMAL,
-                    msg
+            if ( finalMsg.startsWith("_") && finalMsg.endsWith("_") )
+            {
+                finalMsg = finalMsg.substring( 1, finalMsg.length() - 1 );
+                isAction = true;
+            }
+
+            String[] lines = finalMsg.split("\n");
+
+            // Reject if too many lines
+            if (lines.length > 3)
+            {
+                String start = StringUtils.substring(lines[0], 0, 10);
+                DISCORD.sendMessage(
+                    "**%s**: Your message (starting '%s...') has more than 3 lines, and has not"
+                  + " been sent to IRC. Please try to split your message up, or remove newlines.",
+                    event.getMember().getAsMention(), start
                 );
+                return;
+            }
+
+            for (String line : lines)
+                if (isAction)
+                    IRC.sendAction(who, line);
+                else
+                    IRC.sendMessage("<%s%s%s> %s",
+                        Colors.BOLD, who, Colors.NORMAL,
+                        line
+                    );
         });
     }
 
