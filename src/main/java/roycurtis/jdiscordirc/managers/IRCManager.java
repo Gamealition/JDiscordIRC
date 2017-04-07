@@ -1,6 +1,7 @@
 package roycurtis.jdiscordirc.managers;
 
 import com.google.common.base.Strings;
+import org.pircbotx.Colors;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.User;
@@ -84,7 +85,11 @@ public class IRCManager extends ListenerAdapter
         }
 
         log("IRC: %s %s", who, action);
-        IRC.bot.send().action(CHANNEL, who + " " + action);
+        action = String.format("%s%s%s %s",
+            Colors.BOLD, who, Colors.NORMAL,
+            action
+        );
+        IRC.bot.send().action(CHANNEL, action);
     }
 
     public void setAway(String msg)
