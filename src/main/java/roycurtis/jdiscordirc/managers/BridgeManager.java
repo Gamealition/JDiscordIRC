@@ -196,6 +196,7 @@ public class BridgeManager
                 msg += " " + String.join(" ", attaches);
 
             msg = msg.trim();
+            who = EmojiParser.parseToAliases(who, EmojiParser.FitzpatrickAction.REMOVE);
             msg = EmojiParser.parseToAliases(msg, EmojiParser.FitzpatrickAction.REMOVE);
 
             // Special handling for Discord action messages
