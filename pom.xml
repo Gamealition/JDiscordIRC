@@ -8,7 +8,7 @@
 
     <groupId>roycurtis.jdiscordirc</groupId>
     <artifactId>JDiscordIRC</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 
     <description>
         Bridges chat between Discord and IRC channels
@@ -75,6 +75,14 @@
     </properties>
 
     <build>
+        <!-- Replaces tokens like "${project.version}" in resource files -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <!-- Specifies minimum Java version and Unicode for compile and runtime -->
             <plugin>
