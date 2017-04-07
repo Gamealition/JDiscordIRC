@@ -88,7 +88,7 @@ public class BridgeManager
             }
 
             ircFirstTime = false;
-        } );
+        });
     }
 
     public void onIRCDisconnect()
@@ -100,17 +100,17 @@ public class BridgeManager
                 "Connecting to IRC...",
                 "https://irc.gamealition.com"
             );
-        } );
+        });
     }
 
     public void onIRCMessage(User user, String message)
     {
-        queue.add( () -> DISCORD.sendMessage("<**%s**> %s", user.getNick(), message) );
+        queue.add( () -> DISCORD.sendMessageWithMentions("<**%s**> %s", user.getNick(), message) );
     }
 
     public void onIRCAction(User user, String action)
     {
-        queue.add( () -> DISCORD.sendMessage("_**%s** %s_", user.getNick(), action) );
+        queue.add( () -> DISCORD.sendMessageWithMentions("_**%s** %s_", user.getNick(), action) );
     }
 
     public void onIRCJoin(User user)
@@ -159,7 +159,7 @@ public class BridgeManager
     {
         queue.add( () -> {
             DISCORD.sendMessage("••• **%s** changed nick to **%s**", oldNick, newNick);
-        } );
+        });
     }
     //</editor-fold>
 
@@ -183,7 +183,7 @@ public class BridgeManager
                 );
 
             discordFirstTime = false;
-        } );
+        });
     }
 
     public void onDiscordDisconnect()
@@ -277,7 +277,7 @@ public class BridgeManager
                 Colors.BOLD, oldNick, Colors.NORMAL,
                 Colors.BOLD, newNick, Colors.NORMAL
             );
-        } );
+        });
     }
     //</editor-fold>
 }

@@ -1,10 +1,10 @@
 package roycurtis.jdiscordirc.managers;
 
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.*;
+import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
@@ -15,6 +15,10 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static roycurtis.jdiscordirc.JDiscordIRC.BRIDGE;
 import static roycurtis.jdiscordirc.JDiscordIRC.log;
 
@@ -24,6 +28,8 @@ public class DiscordManager extends ListenerAdapter
     public static final String GUILD   = "299214234645037056";
     public static final String CHANNEL = "299214234645037056";
     public static final String TOKEN   = "";
+
+    private static final Pattern MENTION = Pattern.compile("\\B@([\\S]+)\\b");
 
     private JDA bot;
 
@@ -37,7 +43,7 @@ public class DiscordManager extends ListenerAdapter
             .setToken(TOKEN)
             .setStatus(OnlineStatus.DO_NOT_DISTURB)
             .setGame( Game.of("Connecting to IRC...", "https://irc.gamealition.com") )
-            .addListener(this)
+            .addEventListener(this)
             .buildAsync();
     }
 
@@ -58,7 +64,62 @@ public class DiscordManager extends ListenerAdapter
 
         String fullMsg = String.format(msg, parts);
         log("Discord: %s", fullMsg);
+        bot.getTextChannelById(CHANNEL)
+            .sendMessage(fullMsg)
+            .complete();
+    }
 
+    public void sendMessageWithMentions(String msg, Object... parts)
+    {
+        if ( !isAvailable() )
+        {
+            log("[Discord] Rejecting message; Discord unavailable: %s", msg);
+            return;
+        }
+
+        String  fullMsg = String.format(msg, parts);
+        Matcher matcher = MENTION.matcher(fullMsg);
+        Channel channel = bot.getTextChannelById(CHANNEL);
+        Guild   guild   = bot.getGuildById(GUILD);
+
+        // Skip processing mentions if none seem to exist
+        if ( !matcher.find() )
+        {
+            log("Discord: %s", fullMsg);
+            bot.getTextChannelById(CHANNEL)
+                .sendMessage(fullMsg)
+                .complete();
+            return;
+        }
+
+        // Have to reset from above one-time use of find
+        matcher.reset();
+        StringBuffer buffer = new StringBuffer();
+
+        // Iterate through any detected mentions and try to link to member
+        while ( matcher.find() )
+        {
+            String       mention = matcher.group(1);
+            List<Member> matches = guild.getMembersByEffectiveName(mention, true);
+
+            // Skip if no matches, or ambiguous matches
+            if (matches.size() < 1 || matches.size() > 1)
+                continue;
+
+            Member member = matches.get(0);
+
+            // Skip if member is not actually in channel
+            if ( !member.hasPermission(channel, Permission.MESSAGE_READ) )
+                continue;
+
+            // Convert match into a real mention, add to string
+            matcher.appendReplacement( buffer, member.getAsMention() );
+        }
+
+        matcher.appendTail(buffer);
+        fullMsg = buffer.toString();
+
+        log("Discord: %s", fullMsg);
         bot.getTextChannelById(CHANNEL)
             .sendMessage(fullMsg)
             .complete();
