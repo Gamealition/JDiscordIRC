@@ -110,9 +110,10 @@ public class DiscordManager extends ListenerAdapter
         if ( !event.getChannel().getId().contentEquals(CHANNEL) )
             return;
 
-        log( "[Discord] Message by %s: %s",
+        log( "[Discord] Message from %s with %s attachment(s): %s",
             event.getMember().getEffectiveName(),
-            event.getMessage().getRawContent()
+            event.getMessage().getAttachments().size(),
+            event.getMessage().getContent()
         );
         BRIDGE.onDiscordMessage(event);
     }

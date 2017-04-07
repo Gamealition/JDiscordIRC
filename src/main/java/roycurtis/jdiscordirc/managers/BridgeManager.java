@@ -2,6 +2,7 @@ package roycurtis.jdiscordirc.managers;
 
 import com.google.common.base.Strings;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -177,8 +178,23 @@ public class BridgeManager
     public void onDiscordMessage(MessageReceivedEvent event)
     {
         queue.add( () -> {
-            String msg = event.getMessage().getContent();
-            String who = event.getMember().getEffectiveName();
+            String   who      = event.getMember().getEffectiveName();
+            String   msg      = event.getMessage().getContent().trim();
+            String[] attaches = event.getMessage().getAttachments().stream()
+                .map(Message.Attachment::getUrl)
+                .toArray(String[]::new);
+
+            if (msg.isEmpty() && attaches.length <= 0)
+            {
+                log("[Bridge] Skipping empty Discord message by %s", who);
+                return;
+            }
+
+            // Handle file attachments (e.g. messages) as URLs
+            if (attaches.length > 0)
+                msg += " " + String.join(" ", attaches);
+
+            msg = msg.trim();
 
             // Special handling for Discord action messages
             if ( msg.startsWith("_") && msg.endsWith("_") )
