@@ -10,10 +10,10 @@ import roycurtis.jdiscordirc.managers.IRCManager;
 /** Main application class; handles init, main loop and exit */
 public class JDiscordIRC
 {
-    public final static BridgeManager  BRIDGE  = new BridgeManager();
-    public final static ConfigManager  CONFIG  = new ConfigManager();
-    public final static DiscordManager DISCORD = new DiscordManager();
-    public final static IRCManager     IRC     = new IRCManager();
+    public static final BridgeManager  BRIDGE  = new BridgeManager();
+    public static final ConfigManager  CONFIG  = new ConfigManager();
+    public static final DiscordManager DISCORD = new DiscordManager();
+    public static final IRCManager     IRC     = new IRCManager();
 
     private static final Logger LOG = LoggerFactory.getLogger(JDiscordIRC.class);
 
