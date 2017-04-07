@@ -196,7 +196,6 @@ public class BridgeManager
                 msg += " " + String.join(" ", attaches);
 
             msg = msg.trim();
-            who = EmojiParser.parseToAliases(who);
             msg = EmojiParser.parseToAliases(msg);
 
             // Special handling for Discord action messages
@@ -216,7 +215,7 @@ public class BridgeManager
             String who = event.getMember().getEffectiveName();
 
             IRC.sendMessage( "••• %s%s%s joined the server",
-                Colors.BOLD, EmojiParser.parseToAliases(who), Colors.NORMAL
+                Colors.BOLD, who, Colors.NORMAL
             );
         });
     }
@@ -227,7 +226,7 @@ public class BridgeManager
             String who = event.getMember().getEffectiveName();
 
             IRC.sendMessage("••• %s%s%s quit the server",
-                Colors.BOLD, EmojiParser.parseToAliases(who), Colors.NORMAL
+                Colors.BOLD, who, Colors.NORMAL
             );
         });
     }
@@ -236,8 +235,8 @@ public class BridgeManager
     {
         queue.add( () -> {
             IRC.sendMessage("••• %s%s%s changed nick to %s%s%s",
-                Colors.BOLD, EmojiParser.parseToAliases(oldNick), Colors.NORMAL,
-                Colors.BOLD, EmojiParser.parseToAliases(newNick), Colors.NORMAL
+                Colors.BOLD, oldNick, Colors.NORMAL,
+                Colors.BOLD, newNick, Colors.NORMAL
             );
         } );
     }
