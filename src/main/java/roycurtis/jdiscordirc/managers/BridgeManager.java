@@ -71,7 +71,7 @@ public class BridgeManager
             DISCORD.setStatus(
                 OnlineStatus.ONLINE,
                 IRC.getChannel() + " @ " + IRC.getServer(),
-                "https://irc.gamealition.com"
+                DISCORD.getUrl()
             );
 
             // Courtesy message for those on IRC
@@ -101,7 +101,7 @@ public class BridgeManager
             DISCORD.setStatus(
                 OnlineStatus.DO_NOT_DISTURB,
                 "Connecting to IRC...",
-                "https://irc.gamealition.com"
+                DISCORD.getUrl()
             );
         });
     }

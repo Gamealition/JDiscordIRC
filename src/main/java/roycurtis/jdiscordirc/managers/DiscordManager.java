@@ -129,6 +129,11 @@ public class DiscordManager extends ListenerAdapter
         channel.sendMessage(fullMsg).complete();
     }
 
+    public String getUrl()
+    {
+        return url;
+    }
+
     public void setStatus(OnlineStatus status, String game, String url)
     {
         bot.getPresence().setStatus(status);
@@ -163,7 +168,7 @@ public class DiscordManager extends ListenerAdapter
     {
         // Thanks to Minn for the following, for better disconnect explaination.
         // Cannot use event.getClientCloseFrame due to unknown issue with WebSocketFrame
-        String    why  = "";
+        String    why;
         CloseCode code = event.getCloseCode();
 
         if (code != null)
