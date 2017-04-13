@@ -12,12 +12,12 @@ import org.pircbotx.Colors;
 import org.pircbotx.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import roycurtis.jdiscordirc.util.CurrentThread;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static roycurtis.jdiscordirc.JDiscordIRC.*;
+import static roycurtis.jdiscordirc.JDiscordIRC.DISCORD;
+import static roycurtis.jdiscordirc.JDiscordIRC.IRC;
 
 /**
  * Acts as a coordinator of events between IRC and Discord. It forces the handling of incoming
@@ -44,10 +44,7 @@ public class BridgeManager
         Runnable task = queue.poll();
 
         if (task == null)
-        {
-            CurrentThread.sleep(50);
             return;
-        }
 
         try
         {
@@ -59,7 +56,6 @@ public class BridgeManager
         }
 
         LOG.trace( "[Bridge] Pumped events; {} remain", queue.size() );
-        CurrentThread.sleep(10);
     }
     //</editor-fold>
 
