@@ -45,7 +45,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>LATEST</version>
+            <version>3.0.0_175</version>
         </dependency>
         <!-- PircBotX IRC library -->
         <dependency>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>com.vdurmont</groupId>
             <artifactId>emoji-java</artifactId>
-            <version>LATEST</version>
+            <version>3.2.0</version>
         </dependency>
         <!-- Simple Logging Facade API and implementation -->
         <dependency>
@@ -112,7 +112,6 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <!-- TODO: Exclude Discord Opus natives/classes -->
                     <!-- Disable auto generation of dependency-reduced-pom.xml -->
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                 </configuration>
