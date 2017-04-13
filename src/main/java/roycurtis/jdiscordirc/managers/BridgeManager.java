@@ -218,7 +218,7 @@ public class BridgeManager
     {
         queue.add( () -> {
             String   who      = event.getMember().getEffectiveName();
-            String   msg      = event.getMessage().getStrippedContent().trim();
+            String   msg      = event.getMessage().getContent().trim();
             String[] attaches = event.getMessage().getAttachments().stream()
                 .map(Message.Attachment::getUrl)
                 .toArray(String[]::new);

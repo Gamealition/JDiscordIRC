@@ -194,7 +194,7 @@ public class DiscordManager extends ListenerAdapter
         LOG.trace( "Message from {} with {} attachment(s): {}",
             event.getMember().getEffectiveName(),
             event.getMessage().getAttachments().size(),
-            event.getMessage().getStrippedContent()
+            event.getMessage().getContent()
         );
         BRIDGE.onDiscordMessage(event);
     }
