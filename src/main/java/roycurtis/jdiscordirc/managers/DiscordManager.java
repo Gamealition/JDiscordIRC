@@ -49,8 +49,6 @@ public class DiscordManager extends ListenerAdapter
         bot = new JDABuilder(AccountType.BOT)
             .setAudioEnabled(false)
             .setToken(token)
-            .setStatus(OnlineStatus.DO_NOT_DISTURB)
-            .setGame( Game.of("Connecting to IRC...", url) )
             .addEventListener(this)
             .buildAsync();
     }
