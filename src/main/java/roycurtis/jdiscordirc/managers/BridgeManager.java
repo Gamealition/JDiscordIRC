@@ -37,6 +37,7 @@ public class BridgeManager
 
     private boolean ircFirstTime     = true;
     private boolean discordFirstTime = true;
+    private String  lastDiscordMessageSent;
 
     /** Executes a task from the queue in the main thread, to maintain order */
     public void pump()
@@ -201,6 +202,14 @@ public class BridgeManager
                 );
             }
 
+            if (!discordFirstTime && lastDiscordMessageSent != null)
+            {
+                DISCORD.sendMessage(
+                    "••• Last message sent to IRC: \"%s\"", lastDiscordMessageSent
+                );
+
+                lastDiscordMessageSent = null;
+            }
 
             discordFirstTime = false;
         });
@@ -259,12 +268,15 @@ public class BridgeManager
 
             for (String line : lines)
                 if (isAction)
-                    IRC.sendAction(who, line);
+                {
+                    if ( IRC.sendAction(who, line) )
+                        lastDiscordMessageSent = who + " " + msg;
+                }
                 else
-                    IRC.sendMessage("<%s%s%s> %s",
-                        Colors.BOLD, who, Colors.NORMAL,
-                        line
-                    );
+                {
+                    if ( IRC.sendMessage("<%s%s%s> %s", Colors.BOLD, who, Colors.NORMAL, line) )
+                        lastDiscordMessageSent = who + ": " + msg;
+                }
         });
     }
 

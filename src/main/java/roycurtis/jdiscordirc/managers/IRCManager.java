@@ -83,25 +83,26 @@ public class IRCManager extends ListenerAdapter
         return channel;
     }
 
-    public void sendMessage(String msg, Object... parts)
+    public boolean sendMessage(String msg, Object... parts)
     {
         if ( !isAvailable() )
         {
             LOG.debug("Rejecting message; IRC unavailable: {}", msg);
-            return;
+            return false;
         }
 
         String fullMsg = String.format(msg, parts);
         LOG.info( "Sent: {}", Colors.removeFormattingAndColors(fullMsg) );
         IRC.bot.send().message(channel, fullMsg);
+        return true;
     }
 
-    public void sendAction(String who, String action)
+    public boolean sendAction(String who, String action)
     {
         if ( !isAvailable() )
         {
             LOG.debug("Rejecting action; IRC unavailable: {}", action);
-            return;
+            return false;
         }
 
         LOG.info( "Sent: {} {}", who, Colors.removeFormattingAndColors(action) );
@@ -110,6 +111,7 @@ public class IRCManager extends ListenerAdapter
             action
         );
         IRC.bot.send().action(channel, action);
+        return true;
     }
 
     public void setAway(String msg)
