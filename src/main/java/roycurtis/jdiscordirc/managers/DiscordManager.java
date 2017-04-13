@@ -1,7 +1,10 @@
 package roycurtis.jdiscordirc.managers;
 
 import net.dv8tion.jda.core.*;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
@@ -11,6 +14,7 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.core.requests.CloseCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,7 +161,19 @@ public class DiscordManager extends ListenerAdapter
     @Override
     public void onDisconnect(DisconnectEvent event)
     {
-        LOG.warn( "Lost connection ({}); reconnecting...", event.getCloseCode() );
+        // Thanks to Minn for the following, for better disconnect explaination.
+        // Cannot use event.getClientCloseFrame due to unknown issue with WebSocketFrame
+        String    why  = "";
+        CloseCode code = event.getCloseCode();
+
+        if (code != null)
+            why = String.format( "%s: %s", code.getCode(), code.getMeaning() );
+        else
+            why = event.isClosedByServer()
+                ? "closed by server"
+                : "closed by client";
+
+        LOG.warn("Lost connection ({}); reconnecting...", why);
         BRIDGE.onDiscordDisconnect();
     }
 
