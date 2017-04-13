@@ -149,14 +149,16 @@ public class IRCManager extends ListenerAdapter
     @Override
     public void onDisconnect(DisconnectEvent event) throws Exception
     {
+        String why = event.getDisconnectException().getMessage();
+
         if (wasConnected)
         {
-            LOG.warn( "Lost connection ({}); reconnecting...", event.getDisconnectException() );
+            LOG.warn("Lost connection ({}); reconnecting...", why);
             wasConnected = false;
             BRIDGE.onIRCDisconnect();
         }
         else
-            LOG.warn( "Could not connect ({}); retrying...", event.getDisconnectException() );
+            LOG.warn("Could not connect ({}); retrying...", why);
     }
 
     @Override

@@ -55,7 +55,7 @@ public class BridgeManager
         }
         catch (Exception ex)
         {
-            LOG.error("Exception during bridge event: {}", ex);
+            LOG.error( "Exception during bridge event: {}", ex.getMessage() );
         }
 
         LOG.trace( "[Bridge] Pumped events; {} remain", queue.size() );
