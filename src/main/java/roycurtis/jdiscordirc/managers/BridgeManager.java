@@ -167,16 +167,16 @@ public class BridgeManager
             DISCORD.sendMessage("••• **%s** was kicked by **%s** %s",
                 target.getNick(),
                 kicker.getNick(),
-                reason
+                reasonPart
             );
         });
     }
 
     public void onIRCNickChange(String oldNick, String newNick)
     {
-        queue.add( () -> {
-            DISCORD.sendMessage("••• **%s** changed nick to **%s**", oldNick, newNick);
-        });
+        queue.add( () ->
+            DISCORD.sendMessage("••• **%s** changed nick to **%s**", oldNick, newNick)
+        );
     }
     //</editor-fold>
 
@@ -296,12 +296,12 @@ public class BridgeManager
 
     public void onDiscordNickChange(String oldNick, String newNick)
     {
-        queue.add( () -> {
+        queue.add( () ->
             IRC.sendMessage("••• %s%s%s changed nick to %s%s%s",
                 Colors.BOLD, oldNick, Colors.NORMAL,
                 Colors.BOLD, newNick, Colors.NORMAL
-            );
-        });
+            )
+        );
     }
     //</editor-fold>
 }
