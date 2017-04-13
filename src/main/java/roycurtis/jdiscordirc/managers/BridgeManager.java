@@ -63,16 +63,34 @@ public class BridgeManager
     }
     //</editor-fold>
 
+    //<editor-fold desc="Common methods (main thread)">
+    /** Makes the Discord side set it status to reflect offline bridge */
+    private void discordSetOfflineStatus()
+    {
+        DISCORD.setStatus(
+            OnlineStatus.DO_NOT_DISTURB,
+            "Connecting to IRC...",
+            DISCORD.getUrl()
+        );
+    }
+
+    /** Makes the Discord side set it status to reflect online bridge */
+    private void discordSetOnlineStatus()
+    {
+        DISCORD.setStatus(
+            OnlineStatus.ONLINE,
+            IRC.getChannel() + " @ " + IRC.getServer(),
+            DISCORD.getUrl()
+        );
+    }
+    //</editor-fold>
+
     //<editor-fold desc="IRC->Discord (via IRC thread)">
     public void onIRCConnect()
     {
         queue.add( () -> {
             DISCORD.sendMessage("••• Connected to IRC");
-            DISCORD.setStatus(
-                OnlineStatus.ONLINE,
-                IRC.getChannel() + " @ " + IRC.getServer(),
-                DISCORD.getUrl()
-            );
+            discordSetOnlineStatus();
 
             // Courtesy message for those on IRC
             if ( DISCORD.isAvailable() )
@@ -98,11 +116,7 @@ public class BridgeManager
     {
         queue.add( () -> {
             DISCORD.sendMessage("••• Lost connection to IRC; reconnecting...");
-            DISCORD.setStatus(
-                OnlineStatus.DO_NOT_DISTURB,
-                "Connecting to IRC...",
-                DISCORD.getUrl()
-            );
+            discordSetOfflineStatus();
         });
     }
 
@@ -175,15 +189,22 @@ public class BridgeManager
 
             // Courtesy message for those on Discord
             if ( IRC.isAvailable() )
+            {
+                discordSetOnlineStatus();
                 DISCORD.sendMessage(discordFirstTime
                     ? "••• Now bridging chat between Discord and IRC"
                     : "••• Lost connection; restored bridge between Discord and IRC"
                 );
+            }
             else
+            {
+                discordSetOfflineStatus();
                 DISCORD.sendMessage(discordFirstTime
                     ? "••• Waiting for connection to IRC..."
                     : "••• Lost connection to both Discord and IRC; reconnecting to IRC..."
                 );
+            }
+
 
             discordFirstTime = false;
         });
