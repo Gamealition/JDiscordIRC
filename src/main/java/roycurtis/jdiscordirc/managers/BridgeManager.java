@@ -8,7 +8,6 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
-import org.pircbotx.Colors;
 import org.pircbotx.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -274,7 +273,7 @@ public class BridgeManager
                 }
                 else
                 {
-                    if ( IRC.sendMessage("<%s%s%s> %s", Colors.BOLD, who, Colors.NORMAL, line) )
+                    if ( IRC.sendMessage("<%s> %s", who, line) )
                         lastDiscordMessageSent = who + ": " + msg;
                 }
         });
@@ -285,31 +284,20 @@ public class BridgeManager
         queue.add( () -> {
             String who = event.getMember().getEffectiveName();
 
-            IRC.sendMessage( "••• %s%s%s joined the server",
-                Colors.BOLD, who, Colors.NORMAL
-            );
+            IRC.sendMessage( "••• %s joined the server", who);
         });
     }
 
     public void onDiscordUserLeave(GuildMemberLeaveEvent event)
     {
-        queue.add( () -> {
-            String who = event.getMember().getEffectiveName();
-
-            IRC.sendMessage("••• %s%s%s quit the server",
-                Colors.BOLD, who, Colors.NORMAL
-            );
-        });
+        queue.add( () ->
+            IRC.sendMessage( "••• %s quit the server", event.getMember().getEffectiveName() )
+        );
     }
 
     public void onDiscordNickChange(String oldNick, String newNick)
     {
-        queue.add( () ->
-            IRC.sendMessage("••• %s%s%s changed nick to %s%s%s",
-                Colors.BOLD, oldNick, Colors.NORMAL,
-                Colors.BOLD, newNick, Colors.NORMAL
-            )
-        );
+        queue.add( () -> IRC.sendMessage("••• %s changed nick to %s", oldNick, newNick) );
     }
     //</editor-fold>
 }

@@ -106,10 +106,7 @@ public class IRCManager extends ListenerAdapter
         }
 
         LOG.info( "Sent: {} {}", who, Colors.removeFormattingAndColors(action) );
-        action = String.format("%s%s%s %s",
-            Colors.BOLD, who, Colors.NORMAL,
-            action
-        );
+        action = String.format("%s %s", who, action);
         IRC.bot.send().action(channel, action);
         return true;
     }
